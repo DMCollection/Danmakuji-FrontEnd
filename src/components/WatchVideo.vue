@@ -1,6 +1,9 @@
 <template>
-<div class="watchVideo">
-  <div class="search">
+<div class="watchVideo Anime">
+
+<div class="container">
+<el-collapse class="dragArea" v-model="activeNames" accordion>
+  <el-collapse-item title="请将番剧拖入此处" name="1">
   <el-upload
   class="upload-demo"
   drag
@@ -11,9 +14,23 @@
   <i class="el-icon-upload"></i>
   <div class="el-upload__text">将番剧拖到此处，或<em>点击打开</em></div>
 </el-upload>
-  <!-- <el-button icon="el-icon-refresh" circle @click="play"></el-button> -->
+  </el-collapse-item>
+
+  <el-collapse-item v-show="!hasInfo" title="未能正确识别番剧,请手动输入搜索" name="2">
+    
+  <div class="search">
+    <el-input v-model="searchInput" placeholder="请输入内容"></el-input>
+  <el-button icon="el-icon-search" circle @click="play"></el-button>
   </div>
-    <div class="playerWrapper">
+
+  </el-collapse-item>
+
+
+
+</el-collapse>
+</div>
+
+    <div class="playerWrapper playerWrapper-showAnim">
     <div id="dplayer"><d-player :options="playerOpts" ref="player"></d-player></div>
 
     
@@ -28,12 +45,15 @@ import hashMe from '../assets/hashme.js'
 import VueDPlayer from 'vue-dplayer'
 // import '../node_modules/vue-dplayer/vue-dplayer.css'
 import 'DPlayer/dist/DPlayer.min.css';
-
+import axios from 'axios'
 
 
 export default {
   data(){
     return{
+      hasInfo:!true,
+      searchInput:"",
+      activeNames: ['1'],
       videoInput:"",
       videoURL:"",
       playerOpts:{
@@ -126,7 +146,13 @@ export default {
       },
   },
   mounted(){
-    
+        setTimeout(()=>{
+          document.getElementsByClassName("watchVideo")[0].setAttribute("class","watchVideo");
+        },1000);
+    // axios.get("/api/",(res)=>{
+    //   this.tap(res);
+    // })
+
     
   }
 
@@ -134,19 +160,29 @@ export default {
 </script>
 
 <style>
+.container{
+  margin: 2rem auto;
+}
 
 .playerWrapper{
   width: 50%;
   margin: 0 auto;
   border-radius: 5px;
   box-shadow: 0px 4px 20px 5px #00000036, 0px 4px 12px 0px #0000009c;
+}
+/*animation-fill-mode :forwards不能全屏*/
+/*给最外层添加.Anime 产生fadeIn动画 */
+.Anime .playerWrapper-showAnim{
   opacity: 0;
   animation: ShowVideo 0.6s;
   animation-delay: 0.4s;
-  animation-fill-mode: forwards;
+  animation-fill-mode :forwards;
 }
 .dplayer{
   border-radius: 5px;
+}
+.dragArea{
+    animation: ShowVideo 0.4s;
 }
 .search{
   width: 80%;
@@ -171,7 +207,6 @@ export default {
 @keyframes ShowVideo {
   0%{
     opacity: 0;
-    
     transform:scale(.5) translateY(-8em);
   }
   100%{
