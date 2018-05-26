@@ -54,7 +54,8 @@ axios.interceptors.response.use(
     return Promise.reject(err);
   }
 );
-const baseURL = "/api";
+const baseURL = "";
+// const baseURL = "/api";
 
 //  登录相关
 const login = data => {
