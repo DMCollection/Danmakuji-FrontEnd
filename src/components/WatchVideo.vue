@@ -1,15 +1,4 @@
 <template>
-<div class="container">
-<el-collapse class="dragArea" v-model="activeNames" accordion>
-  <el-collapse-item title="请将番剧拖入此处" name="1">
-  <el-upload
-  class="upload-demo"
-  :multiple="false"
-  :auto-upload="false"
-  :on-change="handleChange"
-  action="/">
-  <i class="el-icon-upload"></i>
-  <div class="el-upload__text">将番剧拖到此处，或<em>点击打开</em></div>
   <div class="watchVideo Anime">
 
     <div class="container">
@@ -192,11 +181,8 @@ export default {
       };
       let res = await API.login(testAccount);
       this.tap(res);
-      // let res=await axios.post('/api/auth/login',{principal:"darker",password:"darkerpwd",remember_me:1});
       let token = res.data.data.token;
 
-      //在这之前先检测localStorage , 若不存在则保存本地变量
-      //保存到localStorage
       localStorage.setItem("JWT_TOKEN", token);
     },
     async handleChange(file) {
@@ -297,7 +283,7 @@ export default {
   opacity: 0;
   animation: ShowVideo 0.6s;
   animation-delay: 0.4s;
-  animation-fill-mode: forwards;
+  /* animation-fill-mode: forwards; */
 }
 .dplayer {
   border-radius: 5px;

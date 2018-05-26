@@ -19,16 +19,27 @@
     placement="top"
     width="160"
     v-model="showLogin">
-    <el-input v-model="nameInput" placeholder="账号"></el-input>
-    <el-input v-model="passwordInput" placeholder="密码"></el-input>
-    <el-checkbox v-model="rememberMe">记住我</el-checkbox>
-    <div style="text-align: right; margin: 0">
-      <el-button size="mini" type="text" @click="showLogin = false">取消</el-button>
-      <el-button type="primary" size="mini" @click="login">确定</el-button>
+
+    <div class="loginGroup" v-show="!isLogin">
+      <el-input v-model="nameInput" placeholder="账号"></el-input>
+      <el-input v-model="passwordInput" placeholder="密码"></el-input>
+      <el-checkbox v-model="rememberMe">记住我</el-checkbox>
+      <div style="text-align: right; margin: 0">
+        <el-button size="mini" type="text" @click="showLogin = false">取消</el-button>
+        <el-button type="primary" size="mini" @click="login">确定</el-button>
+      </div>
     </div>
+
+    <div class="loginedGroup" v-show="isLogin">
+      <p> 已登录:{{loginUserName}}</p>
+      <div style="text-align: right; margin: 0">
+        <el-button size="mini" type="text" @click="showLogin = false">取消</el-button>
+        <el-button type="primary" size="mini" @click="logout">注销</el-button>
+      </div>      
+    </div>
+
     <el-button type="primary" icon="el-icon-setting" circle slot="reference"></el-button>
   </el-popover>
-  <!-- <el-menu-item index="3"></el-menu-item> -->
 
 </el-menu>
   </el-header>
@@ -46,21 +57,7 @@
 <script>
 import HelloWorld from "./components/HelloWorld.vue";
 import WatchVideo from "./components/WatchVideo.vue";
-import axios from "axios";
-
-// http request 拦截器
-axios.interceptors.request.use(
-  config => {
-    if (localStorage.JWT_TOKEN) {
-      // 判断是否存在token，如果存在的话，则每个http header都加上token
-      config.headers.Authorization = `${localStorage.JWT_TOKEN}`;
-    }
-    return config;
-  },
-  err => {
-    return Promise.reject(err);
-  }
-);
+import API from "./api/api.js";
 
 export default {
   name: "app",
@@ -73,19 +70,91 @@ export default {
       showLogin: false,
       nameInput: "",
       passwordInput: "",
-      rememberMe: "",
-      activeIndex: "1"
+      rememberMe: false,
+      activeIndex: "1",
+      isLogin: false,
+      loginUserName: ""
     };
   },
   methods: {
     handleSelect(key, keyPath) {
       this.tap(key, keyPath);
     },
-    login() {
-      //成功则关闭此框并弹出对话框
-      // if(){
-      //   showLogin = false;
-      // }
+    async login() {
+      let loginInfo = {
+        principal: this.nameInput,
+        password: this.passwordInput,
+        remember_me: this.rememberMe ? 1 : 0
+      };
+      if (loginInfo.principal == "" || loginInfo.password == "") {
+        this.$message({
+          message: "账号或密码为空",
+          type: "info"
+        });
+        return false;
+      }
+      let res = await API.login(loginInfo);
+
+      let rd = res.data;
+
+      let token = "";
+
+      if (rd.code === 2002 || rd.data == null) {
+        this.$message({
+          message: "账号不存在或密码错误",
+          type: "error"
+        });
+        return false;
+      }
+      if (rd.code === 0 || rd.msg === "OK") {
+        token = rd.data.token;
+        this.isLogin = true;
+        this.loginUserName = loginInfo.principal;
+        if (!token) {
+          this.$message({
+            message: "无法获取到Token",
+            type: "error"
+          });
+        }
+      }
+
+      //检测localStorage , 若不存在则发出提示
+      if (this.checkLocalStorage()) {
+        //保存到localStorage
+        localStorage.setItem("JWT_TOKEN", token);
+        localStorage.setItem("loginUserName", this.loginUserName);
+      }
+    },
+    checkLocalStorage() {
+      if (typeof window.localStorage === "undefined") {
+        this.$message({
+          message: "请关闭隐私模式,或者浏览器太老旧了,否则无法保存登录状态",
+          type: "warning"
+        });
+        return false;
+      } else {
+        return true;
+      }
+    },
+    async logout() {
+      let res = await API.logout();
+      if (res.data.code === 0 || res.data.msg === "登出成功") {
+        this.isLogin = false;
+        localStorage.setItem("JWT_TOKEN", "");
+        localStorage.setItem("loginUserName", "");
+      }
+    }
+  },
+  mounted() {
+    if (this.checkLocalStorage()) {
+      let saveLoginName = localStorage.getItem("loginUserName");
+      let JWT_TOKEN = localStorage.getItem("JWT_TOKEN");
+      this.tap(saveLoginName);
+      //此处应该需要检查Token是否过期
+      if (saveLoginName !== null && JWT_TOKEN !== null) {
+        this.isLogin = true;
+        this.loginUserName = saveLoginName;
+      }
     }
   }
 };
