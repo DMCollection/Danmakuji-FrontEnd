@@ -51,21 +51,9 @@ import hashMe from "../assets/hashme.js";
 import VueDPlayer from "vue-dplayer";
 // import '../node_modules/vue-dplayer/vue-dplayer.css'
 import "DPlayer/dist/DPlayer.min.css";
-import axios from "axios";
+
 import API from "../api/api";
-// http request 拦截器
-axios.interceptors.request.use(
-  config => {
-    if (localStorage.JWT_TOKEN) {
-      // 判断是否存在token，如果存在的话，则每个http header都加上token
-      config.headers.Authorization = `${localStorage.JWT_TOKEN}`;
-    }
-    return config;
-  },
-  err => {
-    return Promise.reject(err);
-  }
-);
+
 export default {
   data() {
     return {
@@ -173,18 +161,6 @@ export default {
         }
       });
     },
-    async login() {
-      let testAccount = {
-        principal: "darker",
-        password: "darkerpwd",
-        remember_me: 1
-      };
-      let res = await API.login(testAccount);
-      this.tap(res);
-      let token = res.data.data.token;
-
-      localStorage.setItem("JWT_TOKEN", token);
-    },
     async handleChange(file) {
       this.videoURL = file.url;
 
@@ -260,8 +236,6 @@ export default {
         .getElementsByClassName("watchVideo")[0]
         .setAttribute("class", "watchVideo");
     }, 1000);
-
-    this.login();
   }
 };
 </script>
