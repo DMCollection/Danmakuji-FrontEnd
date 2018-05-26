@@ -22,7 +22,9 @@
 
     <div class="loginGroup" v-show="!isLogin">
       <el-input v-model="nameInput" placeholder="账号"></el-input>
-      <el-input v-model="passwordInput" placeholder="密码"></el-input>
+
+      <el-input v-model="passwordInput" type="password" placeholder="密码"></el-input>
+
       <el-checkbox v-model="rememberMe">记住我</el-checkbox>
       <div style="text-align: right; margin: 0">
         <el-button size="mini" type="text" @click="showLogin = false">取消</el-button>
@@ -45,10 +47,7 @@
   </el-header>
   <el-main>
         <router-view></router-view>
-    
-
   </el-main>
-  <!-- <el-footer>Footer</el-footer> -->
 </el-container>
 
   </div>
@@ -145,13 +144,19 @@ export default {
       }
     }
   },
-  mounted() {
+  async mounted() {
     if (this.checkLocalStorage()) {
       let saveLoginName = localStorage.getItem("loginUserName");
       let JWT_TOKEN = localStorage.getItem("JWT_TOKEN");
-      this.tap(saveLoginName);
-      //此处应该需要检查Token是否过期
-      if (saveLoginName !== null && JWT_TOKEN !== null) {
+
+      if (JWT_TOKEN == null || JWT_TOKEN == "") {
+        return;
+      }
+      //检查Token是否过期
+      let res = await API.checkToken(JWT_TOKEN);
+      this.tap(res.data);
+
+      if (res.data.code === 0 || res.data.msg === "ojbk") {
         this.isLogin = true;
         this.loginUserName = saveLoginName;
       }
