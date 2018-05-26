@@ -79,8 +79,7 @@ export default {
   },
   methods: {
     handleSelect(key, keyPath) {
-      console.log(key, keyPath);
-      
+      this.tap(key, keyPath);
     },
     login() {
       //成功则关闭此框并弹出对话框
