@@ -19,12 +19,14 @@ const baseURL = "/api";
 const login = data => {
   return axios.post(`${baseURL}/auth/login`, data);
 };
-
+const logout = () => {
+  return axios.get(`${baseURL}/auth/logout`);
+};
 const getVideosInfo = (fileSize, vMd5) => {
-  return axios.get(`/api/videos/${fileSize}/${vMd5}`);
+  return axios.get(`${baseURL}/videos/${fileSize}/${vMd5}`);
 };
 const getDanmakujiIdByBangumisIdAndepIndex = (bangumiId, epIndex) => {
-  return axios.get("/api/episodes", {
+  return axios.get(`${baseURL}/episodes`, {
     params: {
       bangumiId: bangumiId,
       epIndex: epIndex
@@ -32,7 +34,7 @@ const getDanmakujiIdByBangumisIdAndepIndex = (bangumiId, epIndex) => {
   });
 };
 const getsearchBangumisIdResult = query => {
-  return axios.get("/api/bangumis", {
+  return axios.get(`${baseURL}/bangumis`, {
     params: {
       bangumiName: query
     }
@@ -41,6 +43,7 @@ const getsearchBangumisIdResult = query => {
 
 export default {
   login,
+  logout,
   getVideosInfo,
   getDanmakujiIdByBangumisIdAndepIndex,
   getsearchBangumisIdResult

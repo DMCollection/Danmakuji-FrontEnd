@@ -1,6 +1,6 @@
 <template>
   <div class="hello">
-    <p>hello</p>
+    <img src="/static/building-space-1.png" alt="">
   </div>
 </template>
 
@@ -28,5 +28,10 @@ li {
 }
 a {
   color: #42b983;
+}
+</style>
+<style>
+body {
+  /* background: #f7f5ef; */
 }
 </style>
