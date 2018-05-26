@@ -22,7 +22,9 @@
 
     <div class="loginGroup" v-show="!isLogin">
       <el-input v-model="nameInput" placeholder="账号"></el-input>
+
       <el-input v-model="passwordInput" type="password" placeholder="密码"></el-input>
+
       <el-checkbox v-model="rememberMe">记住我</el-checkbox>
       <div style="text-align: right; margin: 0">
         <el-button size="mini" type="text" @click="showLogin = false">取消</el-button>
@@ -150,7 +152,6 @@ export default {
       if (JWT_TOKEN == null || JWT_TOKEN == "") {
         return;
       }
-
       //检查Token是否过期
       let res = await API.checkToken(JWT_TOKEN);
       this.tap(res.data);

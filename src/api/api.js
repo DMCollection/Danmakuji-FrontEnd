@@ -1,4 +1,5 @@
 import axios from "axios";
+
 import Vue from "vue";
 // import qs from 'qs'; //此模块用于转成Form Data 格式
 
@@ -15,6 +16,7 @@ axios.interceptors.request.use(
     return Promise.reject(err);
   }
 );
+
 
 // http响应拦截器
 axios.interceptors.response.use(
@@ -58,12 +60,15 @@ const baseURL = "";
 // const baseURL = "/api";
 
 //  登录相关
+const baseURL = "/api";
+
 const login = data => {
   return axios.post(`${baseURL}/auth/login`, data);
 };
 const logout = () => {
   return axios.get(`${baseURL}/auth/logout`);
 };
+
 const checkToken = token => {
   return axios.get(`${baseURL}/tokens`, token);
 };

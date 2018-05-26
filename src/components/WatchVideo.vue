@@ -83,7 +83,6 @@ export default {
         video: {
           url: this.videoURL,
           // url: "http://static.smartisanos.cn/common/video/t1-ui.mp4",
-
           pic: "/static/placeholder.png",
           thumbnails: "thumbnails.jpg",
           type: "auto"
@@ -161,6 +160,7 @@ export default {
         }
       });
     },
+
     async handleChange(file) {
       this.videoURL = file.url;
 
