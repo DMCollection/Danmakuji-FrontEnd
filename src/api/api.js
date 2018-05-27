@@ -56,6 +56,8 @@ axios.interceptors.response.use(
     return Promise.reject(err);
   }
 );
+
+//本地开发请设置为"/api"
 const baseURL = "";
 // const baseURL = "/api";
 
