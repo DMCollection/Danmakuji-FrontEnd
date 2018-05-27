@@ -49,8 +49,10 @@
 // import '../assets/md5.js'
 import hashMe from "../assets/hashme.js";
 import VueDPlayer from "vue-dplayer";
-// import '../node_modules/vue-dplayer/vue-dplayer.css'
-import "DPlayer/dist/DPlayer.min.css";
+// import "vue-dplayer/vue-dplayer.css";
+// import "DPlayer/dist/DPlayer.min.css";
+
+import "../assets/vue-dplayer.min.css";
 
 import API from "../api/api";
 
