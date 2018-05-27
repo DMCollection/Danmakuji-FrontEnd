@@ -62,8 +62,6 @@ const baseURL = "";
 // const baseURL = "/api";
 
 //  登录相关
-const baseURL = "/api";
-
 const login = data => {
   return axios.post(`${baseURL}/auth/login`, data);
 };
