@@ -11,7 +11,7 @@
             </div>
           </el-upload>
         </el-collapse-item>
-
+        
         <el-collapse-item v-show="!hasInfo" title="未能正确识别番剧,请手动输入搜索" name="2">
 
           <div class="search">
@@ -35,6 +35,13 @@
 
       </el-collapse>
     </div>
+
+    <div class="container bangumi-header" v-if="bangumiName!=''">
+      <h1 class="bangumi-title">{{bangumiName}}：第{{episodeIndex}}集</h1>
+      <div v-on:click="hasInfo=false" class="re-choose">
+         匹配有误？重新选择
+      </div> 
+    </div> 
 
     <div class="playerWrapper playerWrapper-showAnim">
       <div id="dplayer">
@@ -60,9 +67,11 @@ export default {
   data() {
     return {
       episodeId: "",
+      episodeIndex: "",
       episodeTotal: 0,
       searchOption: [],
       searchBangumisId: [],
+      bangumiName:"",
       list: [],
       loading: false,
       states: [],
@@ -86,23 +95,23 @@ export default {
           url: this.videoURL,
           // url: "http://static.smartisanos.cn/common/video/t1-ui.mp4",
           pic: "/static/placeholder.png",
-          thumbnails: "thumbnails.jpg",
+          // thumbnails: "thumbnails.jpg",
           type: "auto"
         },
-        subtitle: {
-          url: "dplayer.vtt",
-          type: "webvtt",
-          fontSize: "25px",
-          bottom: "10%",
-          color: "#b7daff"
-        },
+        // subtitle: {
+        //   url: "dplayer.vtt",
+        //   type: "webvtt",
+        //   fontSize: "25px",
+        //   bottom: "10%",
+        //   color: "#b7daff"
+        // },
         danmaku: {
           id: "9E2E3368B56CDBB4",
           api: "https://api.prprpr.me/dplayer/",
           token: "tokendemo",
           maximum: 1000,
           addition: ["https://api.prprpr.me/dplayer/bilibili?aid=4157142"],
-          user: "DIYgod",
+          user: "Father",
           bottom: "15%",
           unlimited: true
         },
@@ -142,8 +151,12 @@ export default {
         this.searchBangumisId,
         val
       );
-      let danmakuId = res.data.danmakuId;
+      this.tap(res);
+      let danmakuId = res.data.data.danmakuId;
       this.switchVideo(this.videoURL, danmakuId);
+      this.episodeIndex = res.data.data.episodeIndex;
+      this.bangumiName = res.data.data.bangumiName;
+      this.hasInfo = true;
     }
   },
   methods: {
@@ -186,9 +199,15 @@ export default {
         let danmakuId = videosInfo.danmakuId;
         //刷新并装填弹幕
         this.switchVideo(this.videoURL, danmakuId);
+        this.bangumiName = videosInfo.bangumiName;
+        this.episodeIndex = videosInfo.episodeIndex;
+        this.tap("bangumiName:"+this.bangumiName);
+        this.tap("episodeIndex:"+this.episodeIndex);
       } else {
         this.hasInfo = false;
         this.activeNames = ["2"];
+        this.bangumiName = "";
+        this.episodeIndex = "";
       }
     },
     switchVideo(videoURL, danmakuId) {
@@ -200,10 +219,10 @@ export default {
         {
           id: danmakuId,
           api: "http://api.echisan.cn/dplayer/",
-          token: "tokendemo",
+          token: localStorage.getItem("JWT_TOKEN"),
           maximum: 1000,
           // addition: ['https://api.prprpr.me/dplayer/bilibili?aid=4157142'],
-          user: "DIYgod",
+          user: localStorage.getItem("loginUserName"),
           bottom: "15%",
           unlimited: true
         }
@@ -286,7 +305,32 @@ export default {
 .upload-demo {
   display: inline-block;
 }
-
+.bangumi-header {
+    margin: 0 auto;
+    height: 30px;
+}
+.bangumi-title {
+   font-size: 18px;
+   font-weight: 400;
+   line-height: 18px;
+   height: 26px;
+   margin-left: auto;
+   margin-right: auto;
+   margin-bottom: 10px;
+   max-width: 700px;
+   overflow: hidden;
+}
+.re-choose {
+    background-color: #f36392;
+    border: 1px solid #f36392;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    text-align: center;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    float: right;
+}
 @keyframes ShowVideo {
   0% {
     opacity: 0;
