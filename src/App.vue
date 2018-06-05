@@ -13,7 +13,8 @@
   text-color="#fff"
   active-text-color="#ffd04b">
   <el-menu-item index="1"><router-link to='/'><i class="el-icon-menu"></i>首页</router-link></el-menu-item>
-  <el-menu-item index="2"><router-link to='/WatchVideo'><i class="el-icon-view"></i>观看</router-link></el-menu-item>
+  <el-menu-item index="2"><router-link to='/video'><i class="el-icon-view"></i>观看</router-link></el-menu-item>
+  <!-- <el-menu-item index="3"><router-link to='/register'><i class="el-icon-view"></i>注册</router-link></el-menu-item> -->
 
   <el-popover
     placement="top"
@@ -27,7 +28,7 @@
 
       <el-checkbox v-model="rememberMe">记住我</el-checkbox>
       <div style="text-align: right; margin: 0">
-        <el-button size="mini" type="text" @click="showLogin = false">取消</el-button>
+        <el-button size="mini" type="text" @click="registerPage">注册</el-button>
         <el-button type="primary" size="mini" @click="login">确定</el-button>
       </div>
     </div>
@@ -56,13 +57,15 @@
 <script>
 import HelloWorld from "./components/HelloWorld.vue";
 import WatchVideo from "./components/WatchVideo.vue";
+import Register from "./components/Register.vue";
 import API from "./api/api.js";
 
 export default {
   name: "app",
   components: {
     HelloWorld,
-    WatchVideo
+    WatchVideo,
+    Register
   },
   data() {
     return {
@@ -72,12 +75,18 @@ export default {
       rememberMe: false,
       activeIndex: "1",
       isLogin: false,
-      loginUserName: ""
+      loginUserName: "",
+      uid: ""
     };
   },
   methods: {
     handleSelect(key, keyPath) {
       this.tap(key, keyPath);
+    },
+    registerPage(){
+      this.tap("goto register page");
+      this.showLogin = false;
+      this.$router.push({path:"/register"});
     },
     async login() {
       let loginInfo = {
@@ -109,6 +118,9 @@ export default {
         token = rd.data.token;
         this.isLogin = true;
         this.loginUserName = loginInfo.principal;
+        this.tap("login return data:"+rd.data);
+        this.uid = rd.data.user.uid;
+        this.tap("uid:"+this.uid);
         if (!token) {
           this.$message({
             message: "无法获取到Token",
@@ -120,6 +132,7 @@ export default {
       //检测localStorage , 若不存在则发出提示
       if (this.checkLocalStorage()) {
         //保存到localStorage
+        localStorage.setItem("USER_ID", this.uid);
         localStorage.setItem("JWT_TOKEN", token);
         localStorage.setItem("loginUserName", this.loginUserName);
       }
@@ -141,6 +154,7 @@ export default {
         this.isLogin = false;
         localStorage.setItem("JWT_TOKEN", "");
         localStorage.setItem("loginUserName", "");
+        localStorage.setItem("USER_ID","");
       }
     }
   },
@@ -148,6 +162,8 @@ export default {
     if (this.checkLocalStorage()) {
       let saveLoginName = localStorage.getItem("loginUserName");
       let JWT_TOKEN = localStorage.getItem("JWT_TOKEN");
+      let USER_ID =  localStorage.getItem("USER_ID");
+      this.tap("check userid: "+USER_ID);
 
       if (JWT_TOKEN == null || JWT_TOKEN == "") {
         return;

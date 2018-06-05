@@ -58,7 +58,7 @@ axios.interceptors.response.use(
 );
 
 //本地开发请设置为"/api"
-const baseURL = "";
+const baseURL = "https://plentymore.cn";
 // const baseURL = "/api";
 
 //  登录相关
@@ -92,11 +92,51 @@ const getsearchBangumisIdResult = query => {
   });
 };
 
+const getRepliesByEpId = epId => {
+  return axios.get(`${baseURL}/replies`,{
+    params:{
+      epId:epId
+    }
+  });
+};
+
+const getRepliesByEpIdAndPageNum = (epId,pn) => {
+  return axios.get(`${baseURL}/replies`,{
+    params:{
+      epId:epId,
+      pn:pn
+    }
+  });
+};
+
+
+const getSubReplies = (prid,pn) => {
+  return axios.get(`${baseURL}/replies/son`,{
+    params:{
+      prid: prid,
+      pn: pn
+    }
+  });
+};
+
+const addReply = data => {
+  return axios.post(`${baseURL}/replies`,data);
+};
+
+const register = data => {
+    return axios.post(`${baseURL}/users`,data)
+};
+
 export default {
   login,
   logout,
   checkToken,
   getVideosInfo,
   getDanmakujiIdByBangumisIdAndepIndex,
-  getsearchBangumisIdResult
+  getsearchBangumisIdResult,
+  getRepliesByEpId,
+  getRepliesByEpIdAndPageNum,
+  addReply,
+  getSubReplies,
+  register
 };
