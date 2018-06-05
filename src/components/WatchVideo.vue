@@ -24,7 +24,7 @@
               </el-option>
             </el-select>
 
-            <el-select v-model="episodeId" filterable placeholder="请选择集数">
+            <el-select v-model="watchEpisodeIndex" filterable placeholder="请选择集数">
               <el-option v-for="item in episodeTotal" :key="item" :label="item" :value="item">
               </el-option>
             </el-select>
@@ -38,7 +38,7 @@
 
     <div class="container bangumi-header" v-if="bangumiName!=''">
       <h1 class="bangumi-title">{{bangumiName}}：第{{episodeIndex}}集</h1>
-      <div v-on:click="hasInfo=false" class="re-choose">
+      <div v-on:click="hasInfo=!hasInfo" class="re-choose">
          匹配有误？重新选择
       </div> 
     </div> 
@@ -48,7 +48,13 @@
         <d-player :options="playerOpts" ref="player"></d-player>
       </div>
     </div>
+
+    <div v-show="episodeId!=''" class="cm-container">
+      <comment v-on:updateRepliesAndPage="updateRepliesAndPage" :replies="replies" :episode_id="episodeId" :page="page"></comment>
+    </div>
   </div>
+
+  
 
 </template>
 
@@ -56,10 +62,13 @@
 // import '../assets/md5.js'
 import hashMe from "../assets/hashme.js";
 import VueDPlayer from "vue-dplayer";
+import Comment from "./Comment.vue"
+import PostReply from "./PostReply.vue"
+import SparkMD5 from "spark-md5"
 // import "vue-dplayer/vue-dplayer.css";
 // import "DPlayer/dist/DPlayer.min.css";
-
-import "../assets/vue-dplayer.min.css";
+import 'vue-dplayer/dist/vue-dplayer.css'
+// import "../assets/vue-dplayer.min.css";
 
 import API from "../api/api";
 
@@ -68,11 +77,14 @@ export default {
     return {
       episodeId: "",
       episodeIndex: "",
+      watchEpisodeIndex:"",
       episodeTotal: 0,
       searchOption: [],
       searchBangumisId: [],
       bangumiName:"",
       list: [],
+      replies:[],
+      page: "",
       loading: false,
       states: [],
       hasInfo: true,
@@ -106,11 +118,11 @@ export default {
         //   color: "#b7daff"
         // },
         danmaku: {
-          id: "9E2E3368B56CDBB4",
-          api: "https://api.prprpr.me/dplayer/",
+          id: "null",
+          api: "https://plentymore.cn/dplayer/",
           token: "tokendemo",
           maximum: 1000,
-          addition: ["https://api.prprpr.me/dplayer/bilibili?aid=4157142"],
+          // addition: ["https://api.prprpr.me/dplayer/bilibili?aid=4157142"],
           user: "Father",
           bottom: "15%",
           unlimited: true
@@ -131,7 +143,9 @@ export default {
     };
   },
   components: {
-    "d-player": VueDPlayer
+    "d-player": VueDPlayer,
+    "post-reply": PostReply,
+    "comment": Comment
   },
   watch: {
     searchBangumisId(val) {
@@ -146,7 +160,7 @@ export default {
         this.episodeTotal = selectBangumis[0].episodeTotal;
       }
     },
-    async episodeId(val) {
+    async watchEpisodeIndex(val) {
       let res = await API.getDanmakujiIdByBangumisIdAndepIndex(
         this.searchBangumisId,
         val
@@ -154,12 +168,51 @@ export default {
       this.tap(res);
       let danmakuId = res.data.data.danmakuId;
       this.switchVideo(this.videoURL, danmakuId);
+      this.tap("in watch videoURL:"+this.videoURL);
       this.episodeIndex = res.data.data.episodeIndex;
+      this.episodeId = res.data.data.episodeId;
       this.bangumiName = res.data.data.bangumiName;
       this.hasInfo = true;
+      this.initComments();
     }
   },
   methods: {
+    getFileMd5Full(fileRaw){
+        this.tap("getFileFd5Full invoked!");
+        var blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice,
+        file = fileRaw,
+        chunkSize = 4194304,                             // Read in chunks of 4MB
+        chunks = Math.ceil((file.size >16777216?16777216:file.size )/ chunkSize),
+        currentChunk = 0,
+        spark = new SparkMD5.ArrayBuffer(),
+        fileReader = new FileReader();
+        var startData = new Date();
+        var fullMd5 = "";
+        fileReader.onload = function (e) {
+        console.log('read chunk nr', currentChunk + 1, 'of', chunks);
+        spark.append(e.target.result);                   // Append array buffer
+        currentChunk++;
+
+        if (currentChunk < chunks) {
+            loadNext();
+        } else {
+            console.log('finished loading');
+            fullMd5 = spark.end();
+            console.log('computed hash', fullMd5);  // Compute hash
+            console.log("time consumed:"+(new Date()-startData)+"ms");
+        }
+        };
+        fileReader.onerror = function () {
+        console.log('oops, something went wrong.');
+        };
+        function loadNext() {
+        var start = currentChunk * chunkSize,
+            end = ((start + chunkSize) >= (file.size >16777216?16777216:file.size )) ? (file.size >16777216?16777216:file.size ) : start + chunkSize;
+        fileReader.readAsArrayBuffer(blobSlice.call(file, start, end));
+        };
+        loadNext();
+        return fullMd5;
+    },
     play() {
       this.tap("play callback");
       this.tap(this.videoURL);
@@ -178,47 +231,63 @@ export default {
 
     async handleChange(file) {
       this.videoURL = file.url;
-
       //获取视频的弹幕信息
       let vMd5 = await this.getFileMd5(file.raw);
       let fileSize = file.size;
 
       this.tap(vMd5);
       this.tap(fileSize);
-
+      this.tap("handleFileChange, fileURL:"+this.videoURL);
+      this.tap(file);
+      let fullMD5 = await this.getFileMd5Full(file.raw);
+      this.tap("get FullMD5 done! md5: "+fullMD5);
       //立刻开始播放
-      this.switchVideo(this.videoURL, "");
+      // this.switchVideo(this.videoURL, "");
 
       //寻找弹幕资源
+      this.tap("寻找弹幕资源");
       let resData = (await API.getVideosInfo(fileSize, vMd5)).data;
-      this.tap(resData);
+      this.tap("结束寻找弹幕资源");
+      this.tap("episode data :"+resData);
 
       let videosInfo = resData.data;
+      this.tap("videoInfo: "+videosInfo);
       if (resData.code === "0" || resData.msg === "OK") {
         //成功
         let danmakuId = videosInfo.danmakuId;
         //刷新并装填弹幕
+        this.tap("有弹幕, videoURL:"+this.videoURL);
         this.switchVideo(this.videoURL, danmakuId);
         this.bangumiName = videosInfo.bangumiName;
         this.episodeIndex = videosInfo.episodeIndex;
+        this.episodeId = videosInfo.episodeId;
+        this.tap("setEpId in:"+videosInfo.episodeId);
+        this.initComments();
         this.tap("bangumiName:"+this.bangumiName);
         this.tap("episodeIndex:"+this.episodeIndex);
       } else {
+        this.tap("没有弹幕，直接播放, videoURL:"+this.videoURL);
+        this.switchVideo(this.videoURL, "");
         this.hasInfo = false;
         this.activeNames = ["2"];
         this.bangumiName = "";
         this.episodeIndex = "";
+        this.episodeId = "";
+        this.replies = [];
       }
     },
     switchVideo(videoURL, danmakuId) {
+      this.tap("switch video invoked!");
+      this.tap("videoURL:"+ videoURL+"   danmakuId:"+danmakuId);
       const player = this.$refs.player.dp;
       player.switchVideo(
         {
-          url: this.videoURL
+          // url: this.videoURL
+          url: videoURL
         },
         {
           id: danmakuId,
-          api: "http://api.echisan.cn/dplayer/",
+          api: "https://plentymore.cn/dplayer/",
           token: localStorage.getItem("JWT_TOKEN"),
           maximum: 1000,
           // addition: ['https://api.prprpr.me/dplayer/bilibili?aid=4157142'],
@@ -248,14 +317,34 @@ export default {
       } else {
         this.searchOption = [];
       }
+    },
+    async initComments(){
+      this.tap("episodeId:"+this.episodeId);
+      let repliesData = (await API.getRepliesByEpId(this.episodeId)).data;
+      this.tap(repliesData);
+      if(repliesData.code === "0" || repliesData.msg === "OK") {
+        this.tap("get replies:");
+        this.tap(repliesData.data.replies);
+        this.tap("get page:");
+        this.tap(repliesData.data.page)
+        this.replies = repliesData.data.replies;
+        this.page = repliesData.data.page;
+      };
+    },
+    updateRepliesAndPage(replies, pageInfo){
+      this.replies = replies;
+      this.page = pageInfo;
+      this.tap("updateRepliesAndPage passed success!");
     }
   },
   mounted() {
     //动画Fix 全屏问题
+       
     setTimeout(() => {
-      document
-        .getElementsByClassName("watchVideo")[0]
-        .setAttribute("class", "watchVideo");
+      let d = document.getElementsByClassName("watchVideo")[0];
+      if(d){
+        d.setAttribute("class", "watchVideo");
+      }
     }, 1000);
   }
 };
@@ -330,6 +419,12 @@ export default {
     font-size: 14px;
     cursor: pointer;
     float: right;
+}
+.cm-container {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 20px;
+  text-align: left;
 }
 @keyframes ShowVideo {
   0% {
