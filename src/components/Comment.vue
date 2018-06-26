@@ -14,16 +14,6 @@
               </ul>
             </div>
             <div class="header-page paging-box">
-              <!-- <el-pagination
-                  small
-                  @current-change="targetPage"
-                  @prev-click="prevPage"
-                  @next-click="nextPage"
-                  :page-size="page.pageSize"
-                  :pager-count="11"
-                  layout="prev, pager, next"
-                  :total="page.parentTotalSize">
-              </el-pagination> -->
             </div>
           </div>
           <post-reply v-on:updateRootComment="updateRootComment" :is_top="true" :episode_id="episode_id"></post-reply>
@@ -32,19 +22,16 @@
           </div>
           <div class="bottom-page paging-box-big">
               <el-pagination v-if="page.parentTotalSize>20"
-                    @current-change="targetPage"
-                    @prev-click="prevPage"
-                    @next-click="nextPage"
-                    background
-                    :page-size="page.pageSize"
-                    :pager-count="11"
-                    layout="prev, pager, next"
-                    :total="page.parentTotalSize">
+              @current-change="targetPage" 
+              :current-page.sync="page.pageNumber"
+              :pager-count="11"
+              :page-size="page.pageSize" 
+              layout="total, prev, pager, next, jumper" :total="page.parentTotalSize">
               </el-pagination>
           </div>
           <post-reply v-if="replies.length>9" v-on:updateRootComment="updateRootComment" :is_top="true" :episode_id="episode_id"></post-reply>
         </div>
-        <emoji-box></emoji-box>
+        <!-- <emoji-box></emoji-box> -->
       </div>
     </div>
 </template>
@@ -73,33 +60,28 @@ export default {
             this.replies.unshift(newReply);
             this.tap("replies.length:"+this.replies.length);
         },
-        async loadData(epid, curPage){
-            let res = await API.getRepliesByEpIdAndPageNum(epid, curPage);
+        async loadData(epid, pageNum){
+            let res = await API.getRepliesByEpIdAndPageNum(epid, pageNum);
             let resData =  res.data;
-            this.tap("epdi: "+epid+" curPage: "+curPage+" resData:"+resData);
+            this.tap("epdi: "+epid+" pageNum: "+pageNum+" resData:"+resData);
             return resData;
         },
-        async nextPage(){
-            let resData = (await this.loadData(this.episode_id, this.page.pageNumber+1));
-            let pageInfo = resData.data.page;
-            let replies = resData.data.replies;
-            this.$emit("updateRepliesAndPage",replies,pageInfo);
-            this.tap("nextPage invoked!");
-        },
-        async prevPage(){
-            let resData = (await this.loadData(this.episode_id, this.page.pageNumber-1));
-            let pageInfo = resData.data.page;
-            let replies = resData.data.replies;
-            this.$emit("updateRepliesAndPage",replies,pageInfo);
-            this.tap("nextPage invoked!");
-        },
+    
         async targetPage(val){
             let resData = (await this.loadData(this.episode_id, val));
             let pageInfo = resData.data.page;
             let replies = resData.data.replies;
             this.$emit("updateRepliesAndPage",replies,pageInfo);
-            this.tap("nextPage invoked!");
+            this.tap("targetPage invoked!");
         }
+        // async handleSizeChange(val){
+        //     this.tap("pageSize:"+val);
+        //     let resData = (await this.loadData(this.episode_id, this.page.pageNumber, val));
+        //     let pageInfo = resData.data.page;
+        //     let replies = resData.data.replies;
+        //     this.$emit("updateRepliesAndPage",replies,pageInfo);
+        //     this.tap("targetPage invoked!");
+        // }
     }
 }
 </script>
@@ -107,7 +89,8 @@ export default {
 <style>
 .comment-wrapper {
     margin: 0 auto;
-    width: 50%;
+    /* width: 50%; */
+    width: 690px;
 }
 .clearfix:after {
     content: "";

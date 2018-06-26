@@ -6,18 +6,45 @@
         <div :class="{'focus':activeFocus}" class="textarea-container">
             <i class="ipt-arrow"></i>
             <textarea @focus="addFocusClass" @blur="removeFocusClass" cols="80" name="msg" v-model="content" rows="5" :placeholder="getReplyUser" class="ipt-txt"></textarea>
-            <button v-on:click="postComment" class="comment-submit" data-rid="797290060" data-pid="797344362">发表评论</button>
+            <el-tooltip v-model="post_succ"
+                        :visible-arrow="false"
+                        :manual="true"
+                        :hide-after="2"
+                        content="发送成功" 
+                        placement="top">
+                        <button v-on:click="postComment" class="comment-submit" >发表评论</button>
+            </el-tooltip>
+            <!-- <button v-on:click="postComment" class="comment-submit" >发表评论</button> -->
         </div>
-        <div ref="mybox" tabindex="1" class="comment-emoji" @blur="hideEmojiBox" @click="getClickPoint">
+
+<el-popover
+  v-model="show_emoji_box"
+  width="400"
+  placement="bottom-start"
+  trigger="click">
+
+  <div>
+      <emoji-box v-on:selectedEmoji="selectedEmoji"></emoji-box>
+  </div>
+  
+  <div ref="mybox" slot="reference" tabindex="1" class="comment-emoji">
             <i class="face"></i>
             <span class="text">表情</span>
-        </div>
+  </div>
+</el-popover>
+
+
+        <!-- <div ref="mybox" tabindex="1" class="comment-emoji" @blur="hideEmojiBox" @click="getClickPoint">
+            <i class="face"></i>
+            <span class="text">表情</span>
+        </div> -->
     </div>
 </template>
 
 <script>
 import API from "../api/api"
 import bus from "../assets/eventBus.js"
+import EmojiBox from './EmojiBox.vue'
 export default {
     props:[
         "replies","m_replies","episode_id","reply_info","show_reply_box","is_top"
@@ -32,28 +59,17 @@ export default {
         pos_x: 0,
         pos_y: 0,
         activeFocus: false,
+        show_emoji_box: false,
+        post_succ: false
         };
     },
+    components:{
+        "emoji-box":EmojiBox
+    },
     methods:{
-        getElementAbsPos(e){  
-        let t = e.offsetTop;  
-        let l = e.offsetLeft;  
-        while(e = e.offsetParent){  
-            t += e.offsetTop;  
-            l += e.offsetLeft;  
-        }  
-        return {left:l,top:t};  
-        },
-        getClickPoint(e){
-            let position = this.getElementAbsPos(this.$refs.mybox);
-	        this.pos_x = position.left-100;
-	        this.pos_y = position.top-760;
-           this.tap("absolute: x:"+this.pos_x+" y:"+this.pos_y);
-            bus.$emit("changeEmojiPos","block",this.pos_x+"px",this.pos_y+"px",this.is_top);
-        },
-        hideEmojiBox(){
-            this.tap("onblur tigger!")
-            bus.$emit("hideEmojiBox");
+        selectedEmoji(emoji){
+            this.show_emoji_box = false;
+            this.content = this.content+emoji;
         },
         addFocusClass(){
             this.tap("add focus");
@@ -102,6 +118,7 @@ export default {
             if(resData.code === 0){
                 this.content = "";
                 this.tap("post success");
+                this.post_succ = true;
                 if(this.reply_info){
                     this.tap("has_reply_info and post success");
                     this.$emit("postReplySuccess");
@@ -115,6 +132,9 @@ export default {
                     this.tap("update SubComment!");
                     this.$emit("updateSubComment",newReply);
                 }
+                setTimeout(() => {
+                        this.post_succ = false;
+                    }, 2000);
             }
             else{
                 this.tap("发送评论失败");
@@ -130,26 +150,11 @@ export default {
                 return "请自觉遵守互联网相关的政策法规，严禁发布色情、暴力、反动的言论。"
             }
         }
-    },
-    mounted(){
-        bus.$on("selectedEmoji",(emoji,is_top)=>{
-            this.content = this.content + emoji;
-            if(!this.show_reply_box){
-                if(!this.is_top){
-                    this.content = "";
-                }
-            }
-            if(this.is_top && !is_top){
-                this.tap("clean top reply content");
-                this.content = "";
-            }
-            this.tap("get selected emoji: "+ emoji);
-        });
     }
 }
 </script>
 
-<style>
+<style scoped>
 .comment-send {
     margin: 10px 0;
 }

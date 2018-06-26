@@ -19,9 +19,9 @@
             <p class="text">{{reply.reply.reply.content}}</p>
             <div class="info">
                 <span class="floor">#{{reply_total-index}}</span>
-                <span class="plad">来自<a href="" target="_blank">darker.online</a></span>
+                <span class="plad">来自<a href="#/video" target="_blank">darker.online</a></span>
                 <span class="time">{{new Date(reply.reply.reply.createTime).toLocaleString()}}</span>
-                <span class="like "><i></i><span>233</span></span>
+                <span @click="postAttitide(reply.reply.reply.replyId)" :class="{liked:reply.reply.likeStatus}" class="like "><i></i><span>{{reply.reply.reply.rLike}}</span></span>
                 <span class="hate "><i></i></span>
                 <span @click="showReplyBox" class="reply btn-hover">回复</span>
                 <operation></operation>
@@ -48,6 +48,7 @@ import SubReply from "./SubReply.vue"
 import PaddingBox from "./PaddingBox.vue"
 import Operation from  "./Operation.vue"
 import PostReply from "./PostReply.vue"
+import API from "../api/api";
 export default {
     props:[
         "reply","replies","episode_id","page","index","reply_total"
@@ -108,6 +109,40 @@ export default {
             this.tap("updateSubComment invoked!");
             this.reply.replies.push(newReply);
         },
+        async postAttitide(rid){
+            if(this.reply.reply.likeStatus === 0){
+                this.tap("post attitude,rid:"+rid+" action: 1");
+                let res = await API.postActiontoReply(rid,1);
+                let rd = res.data;
+                if(rd.code === 0){
+                    this.tap(rd.data);
+                    this.reply.reply.likeStatus = 1;
+                    this.reply.reply.reply.rLike+=1; 
+                }
+                else{
+                    this.$message({
+                    message: "点赞失败",
+                    type: "error"
+                 });
+                }
+            }
+            else{
+                this.tap("post attitude,rid:"+rid+" action: 0");
+                let res = await API.postActiontoReply(rid,0);
+                let rd = res.data;
+                if(rd.code === 0){
+                    this.tap(rd.data);
+                    this.reply.reply.likeStatus = 0;
+                    this.reply.reply.reply.rLike-=1;
+                }
+                else{
+                    this.$message({
+                    message: "取消点赞失败",
+                    type: "error"
+                 });
+                }
+            }
+        },
         viewMore(){
             this.view_more = true;
             this.tap("view_more: "+this.view_more);
@@ -117,7 +152,8 @@ export default {
             this.tap("sub_replies:"+sub_replies);
             this.reply.replies = sub_replies;
         }
-    }
+    },
+    
 }
 </script>
 
@@ -266,6 +302,9 @@ div{
     margin-right: 5px;
     background: url(/static/icons-comment.png) no-repeat;
     background-position: -153px -25px;
+}
+.like.liked i {
+    background-position: -154px -89px;
 }
 .hate i {
     display: inline-block;
