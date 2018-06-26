@@ -119,7 +119,7 @@ export default {
         // },
         danmaku: {
           id: "null",
-          api: "https://plentymore.cn/dplayer/",
+          api: "http://10.0.46.28:8080/dplayer/",
           token: "tokendemo",
           maximum: 1000,
           // addition: ["https://api.prprpr.me/dplayer/bilibili?aid=4157142"],
@@ -287,7 +287,7 @@ export default {
         },
         {
           id: danmakuId,
-          api: "https://plentymore.cn/dplayer/",
+          api: "http://10.0.46.28:8080/dplayer/",
           token: localStorage.getItem("JWT_TOKEN"),
           maximum: 1000,
           // addition: ['https://api.prprpr.me/dplayer/bilibili?aid=4157142'],
@@ -306,7 +306,7 @@ export default {
 
         if (rs.code === "0" || rs.msg === "OK") {
           //成功
-          this.states = rs.data;
+          this.states = rs.data.content;
           this.list = this.states.map(item => {
             return { value: item.bangumiId, label: item.bangumiName };
           });

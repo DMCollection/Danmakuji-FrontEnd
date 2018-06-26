@@ -32,7 +32,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .bb-comment .comment-list .list-item .info .operation {
     position: relative;
     width: 18px;

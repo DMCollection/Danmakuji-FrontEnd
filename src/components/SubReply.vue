@@ -11,8 +11,10 @@
             </div>
             <div class="info">
                 <span class="time">{{new Date(m_reply.reply.modifyTime).toLocaleString()}}</span>
-                <span class="like "><i></i>
-                <span>274</span></span>
+                <span @click="postAttitide(m_reply.reply.replyId)" :class="{liked:m_reply.likeStatus}" class="like ">
+                    <i></i>
+                <span>{{m_reply.reply.rLike}}</span>
+                </span>
                 <span @click="showReplyBox" class="reply btn-hover">回复</span>
                 <operation></operation>
             </div>
@@ -20,8 +22,9 @@
     </div>
 </template>
 
-<script>
+<script scoped>
 import operation from "./Operation.vue"
+import API from "../api/api";
 export default {
     props:["m_reply","reply",],
     data(){
@@ -50,6 +53,40 @@ export default {
             this.tap("reply p_rid: "+this.replyInfo.p_rid);
             this.tap("reply prefix: "+ this.replyInfo.prefix);
             this.$emit("toggleRB",this.replyInfo);
+        },
+        async postAttitide(rid){
+            if(this.m_reply.likeStatus === 0){
+                this.tap("post attitude,rid:"+rid+" action: 1");
+                let res = await API.postActiontoReply(rid,1);
+                let rd = res.data;
+                if(rd.code === 0){
+                    this.tap(rd.data);
+                    this.m_reply.likeStatus = 1;
+                    this.m_reply.reply.rLike+=1; 
+                }
+                else{
+                    this.$message({
+                    message: "点赞失败",
+                    type: "error"
+                 });
+                }
+            }
+            else{
+                this.tap("post attitude,rid:"+rid+" action: 0");
+                let res = await API.postActiontoReply(rid,0);
+                let rd = res.data;
+                if(rd.code === 0){
+                    this.tap(rd.data);
+                    this.m_reply.likeStatus = 0;
+                    this.m_reply.reply.rLike-=1; 
+                }
+                else{
+                    this.$message({
+                    message: "取消点赞失败",
+                    type: "error"
+                 });
+                }
+            }
         }
     }
 }
@@ -102,6 +139,9 @@ export default {
 }
 .bb-comment .comment-list .list-item .info .like {
     cursor: pointer;
+}
+.like.liked i {
+    background-position: -154px -89px;
 }
 .bb-comment .comment-list .list-item .info .btn-hover {
     padding: 0 5px;
