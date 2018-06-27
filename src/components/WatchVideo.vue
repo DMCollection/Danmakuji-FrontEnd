@@ -374,6 +374,7 @@ export default {
 }
 .dragArea {
   animation: ShowVideo 0.4s;
+  border: 0;
 }
 .search {
   width: 80%;
@@ -425,6 +426,22 @@ export default {
   margin-right: auto;
   margin-top: 20px;
   text-align: left;
+}
+.el-collapse-item__wrap{
+  background-color: inherit;
+  border: 0;
+}
+.el-collapse-item__header{
+  background-color:inherit;
+  color: #c5eae7;
+  font-size: 16px;
+  font-weight: 500;
+  border-bottom:0;
+}
+.el-upload-dragger{
+  background-color: inherit;
+  border: 1px solid#20968b;
+  width: 450px;
 }
 @keyframes ShowVideo {
   0% {

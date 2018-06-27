@@ -2,19 +2,19 @@
     <div class="list-item reply-wrap">
         <div class="user-face">
             <a href="#" target="_blank" data-usercard-mid="27629197">
-              <img src="/static/14686527d8d715e986ddd29a208775a29a0030c8.jpg@52w_52h.webp" alt="">
+              <img :src="reply.reply.user.face?reply.reply.user.face:'/static/defaultface.png'" alt="">
             </a>
-            <a href="#" class="pendant" data-usercard-mid="27629197" target="_blank">
+            <!-- <a href="#" class="pendant" data-usercard-mid="27629197" target="_blank">
               <img src="/static/1cdf174c75dd6493f3c8f0797e972b69e3293870.png@86w_86h.webp">
-            </a>
+            </a> -->
             <div class="hot-follow">
                 <!-- <button class="follow-btn" data-mid="27629197" data-uname="CJLN__" data-rpid="809094163">关注</button> -->
             </div>
         </div>
         <div class="con">
             <div class="user">
-                <a data-usercard-mid="27629197" href="#" target="_blank" class="name vip-red-name">{{reply.reply.user.nick}}</a>
-                <a href="#" target="_blank"><i class="level l4"></i></a>
+                <a href="#" target="_blank" class="name vip-red-name">{{reply.reply.user.nick}}</a>
+                <!-- <a href="#" target="_blank"><i class="level l4"></i></a> -->
             </div>
             <p class="text">{{reply.reply.reply.content}}</p>
             <div class="info">
@@ -227,7 +227,7 @@ div{
     position: relative;
     margin-left: 85px;
     padding: 22px 0 14px;
-    border-top: 1px solid #e5e9ef;
+    border-top: 1px solid#20968b;;
 }
 .bb-comment .comment-list .list-item .user {
     font-size: 12px;
@@ -266,7 +266,8 @@ div{
 .bb-comment .comment-list .list-item .text {
     line-height: 20px;
     padding: 2px 0;
-    font-size: 14px;
+    font-size: 15px;
+    color:rgb(197, 200, 198);
     text-shadow: none;
     overflow: hidden;
     word-wrap: break-word;

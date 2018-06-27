@@ -1,7 +1,7 @@
 <template>
     <div  class="comment-send">
         <div class="user-face">
-            <img class="user-head" src="/static/900fa502da798fb1b3947a078783cbbf9405660e.jpg@52w_52h.webp">
+            <img class="user-head" :src="curUserFace?curUserFace:'/static/defaultface.png'">
         </div>
         <div :class="{'focus':activeFocus}" class="textarea-container">
             <i class="ipt-arrow"></i>
@@ -60,13 +60,17 @@ export default {
         pos_y: 0,
         activeFocus: false,
         show_emoji_box: false,
-        post_succ: false
+        post_succ: false,
+        curUserFace:""
         };
     },
     components:{
         "emoji-box":EmojiBox
     },
     methods:{
+        getCurUserFace(){
+            return localStorage.getItem('face');
+        },
         selectedEmoji(emoji){
             this.show_emoji_box = false;
             this.content = this.content+emoji;
@@ -150,6 +154,9 @@ export default {
                 return "请自觉遵守互联网相关的政策法规，严禁发布色情、暴力、反动的言论。"
             }
         }
+    },
+    mounted(){
+        this.curUserFace = this.getCurUserFace();
     }
 }
 </script>
@@ -163,6 +170,13 @@ export default {
     margin: 7px 0 0 5px;
     position: relative;
 }
+
+.comment-send .user-face .user-head {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+}
+
 .comment-send .textarea-container {
     position: relative;
     margin-left: 85px;
@@ -172,8 +186,8 @@ export default {
     font-size: 12px;
     display: inline-block;
     box-sizing: border-box;
-    background-color: #f4f5f7;
-    border: 1px solid #e5e9ef;
+    /* background-color: #f4f5f7;
+    border: 1px solid #e5e9ef; */
     overflow: auto;
     border-radius: 4px;
     color: #555;
@@ -182,9 +196,16 @@ export default {
     transition: 0s;
     padding: 5px 10px;
     line-height: normal;
+    background-color: #0f0f19;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    border: 1px solid #393945;
+    /* width: 100%;
+    font-size: 1.414rem;
+    height: 3em; */
 }
 .bb-comment .comment-send .textarea-container.focus textarea,.bb-comment .comment-send .textarea-container:hover textarea{
-    background-color:#fff;
+    background-color:#0f0f19;
     border-color:#00a1d6
 }
 textarea {
@@ -241,6 +262,7 @@ textarea {
     vertical-align: middle;
     line-height: 1;
     font-size: 12px!important;
+    color: #f9efc1;
 }
 </style>
 

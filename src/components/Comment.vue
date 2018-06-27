@@ -1,7 +1,7 @@
 <template>
      <div class="comment-wrapper common">
-      <div class="comment-title b-head">
-        <span class="results">{{page.totalSize}}</span>评论
+      <div style="color:#f9efc1;" class="comment-title b-head">
+        <span class="results" >{{page.totalSize}}</span>评论
       </div>
       <div  class="comm" style="position: relative;">
         <div class="bb-comment ">
@@ -90,8 +90,15 @@ export default {
 .comment-wrapper {
     margin: 0 auto;
     /* width: 50%; */
-    width: 690px;
+    width: 870px;
 }
+
+@media screen and (max-width: 1400px)  {
+    .comment-wrapper {
+        width: 690px;
+    }  
+}
+
 .clearfix:after {
     content: "";
     display: block;
@@ -117,14 +124,15 @@ export default {
     font-family: Microsoft YaHei,Arial,Helvetica,sans-serif;
     zoom: 1;
     min-height: 100px;
-    background: #fff;
+    /* background: #fff; */
 }
 .bb-comment .reply-notice {
     margin-bottom: 10px;
 }
 .bb-comment .comment-header {
     margin: 0 0 24px;
-    border-bottom: 1px solid #e5e9ef;
+    /* border-bottom: 1px solid #e5e9ef; */
+    border-bottom: 1px solid#20968b;
 }
 .bb-comment .clearfix {
     zoom: 1;
@@ -196,4 +204,20 @@ export default {
 .paging-box-big {
     font-size: 12px;
 }
+.el-pagination .btn-prev{
+    background-color:rgba(20,20,34,0.9);
+}
+.el-pagination .number{
+    background-color: rgba(20,20,34,0.9);
+}
+.el-pagination .btn-next{
+    background-color: rgba(20,20,34,0.9);
+}
+.el-pagination button:disabled {
+    background-color:  rgba(20,20,34,0.9);
+}
+.el-pagination__editor .el-input__inner{
+    background-color: #0f0f19;
+}
+
 </style>

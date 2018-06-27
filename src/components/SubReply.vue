@@ -1,12 +1,12 @@
 <template>
     <div class="reply-item reply-wrap">
-        <a href="https://space.bilibili.com/21913953" data-usercard-mid="21913953" target="_blank" class="reply-face">
-          <img src="/static/c3c46064847f822b63700b3a7feb784896e61d01.jpg@52w_52h.webp" alt="">
+        <a href="#" class="reply-face">
+          <img :src="m_reply.user.face?m_reply.user.face:'/static/defaultface.png'" alt="">
         </a>
         <div class="reply-con">
             <div class="user">
-                <a href="https://space.bilibili.com/21913953" target="_blank" data-usercard-mid="21913953" class="name vip-red-name">{{m_reply.user.nick}}</a>
-                <a href="https://www.bilibili.com/blackboard/help.html#%E4%BC%9A%E5%91%98%E7%AD%89%E7%BA%A7%E7%9B%B8%E5%85%B3" target="_blank"><i class="level l4"></i></a>
+                <a href="#" class="name vip-red-name">{{m_reply.user.nick}}</a>
+                <!-- <a href="https://www.bilibili.com/blackboard/help.html#%E4%BC%9A%E5%91%98%E7%AD%89%E7%BA%A7%E7%9B%B8%E5%85%B3" target="_blank"><i class="level l4"></i></a> -->
                 <span class="text-con">{{m_reply.reply.content}}</span>
             </div>
             <div class="info">
@@ -126,8 +126,10 @@ export default {
 }
 .bb-comment .comment-list .list-item .user .text-con {
     font-weight: 400;
-    font-size: 14px;
+    font-size: 15px;
+    color: rgb(197, 200, 198);
     line-height: 20px;
+    margin-left: 10px;
 }
 .bb-comment .comment-list .list-item .info {
     color: #99a2aa;
