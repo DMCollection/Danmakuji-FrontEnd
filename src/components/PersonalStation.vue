@@ -1,36 +1,17 @@
 <template>
-    <div style="width:980px;margin:0 auto;">
-        <el-container style="height: 500px; border: 1px solid #eee">
-  <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
-    <el-menu :default-openeds="['1', '3']">
-      <el-submenu index="1">
-        <template slot="title"><i class="el-icon-message"></i>导航一</template>
-        <el-menu-item-group>
-          <template slot="title">分组一</template>
-          <el-menu-item index="1-1">选项1</el-menu-item>
-          <el-menu-item index="1-2">选项2</el-menu-item>
-        </el-menu-item-group>
-        <el-menu-item-group title="分组2">
-          <el-menu-item index="1-3">选项3</el-menu-item>
-        </el-menu-item-group>
-        <el-submenu index="1-4">
-          <template slot="title">选项4</template>
-          <el-menu-item index="1-4-1">选项4-1</el-menu-item>
-        </el-submenu>
-      </el-submenu>     
+    <div class="persondiv" style="width:980px;margin:0 auto;">
+        <el-container style="height: 800px; border-radius:5px">
+  <el-aside style="margin-right:20px;background-color:#262633;" width="200px">
+    <el-menu style="background-color:#262633;border:0" :default-active="pactiveIndex">
+        <router-link :to="{name:'avatar'}"><el-menu-item class="nav-item" index="1">头像信息</el-menu-item></router-link>
+        <router-link :to="{name:'personal'}"><el-menu-item class="nav-item" index="2">个人资料</el-menu-item></router-link>
+        <router-link :to="{name:'security'}"><el-menu-item class="nav-item" index="3">账号安全</el-menu-item></router-link>
     </el-menu>
   </el-aside>
   
-  <el-container>
+  <el-container style="overflow:inherit;background-color:#262633;">
     <el-main>
-      <el-table :data="tableData">
-        <el-table-column prop="date" label="日期" width="140">
-        </el-table-column>
-        <el-table-column prop="name" label="姓名" width="120">
-        </el-table-column>
-        <el-table-column prop="address" label="地址">
-        </el-table-column>
-      </el-table>
+        <router-view></router-view>
     </el-main>
   </el-container>
 </el-container>
@@ -38,9 +19,26 @@
 </template>
 
 <script>
-export default {};
+import AvatarInfo from "./AvatarInfo.vue"
+
+export default {
+  data() {
+    return {
+      pactiveIndex:"1"
+    };
+  },
+  components: {
+    AvatarInfo
+  },
+  methods: {
+			
+		}
+};
 </script>
 
-<style>
+<style scoped>
+.nav-item{
+  color: #149287;
+}
 </style>
 

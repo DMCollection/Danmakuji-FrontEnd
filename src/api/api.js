@@ -10,6 +10,11 @@ axios.interceptors.request.use(
       // 判断是否存在token，如果存在的话，则每个http header都加上token
       config.headers.Authorization = `${localStorage.JWT_TOKEN}`;
     }
+    if(`!${localStorage.ClientId}`){
+      localStorage.setItem("ClientId",(new Date()-0));
+    };
+    config.headers.ClientId = `${localStorage.ClientId}`;
+    console.log("client-id:",`${localStorage.ClientId}`);
     return config;
   },
   err => {
@@ -58,7 +63,7 @@ axios.interceptors.response.use(
 );
 
 //本地开发请设置为"/api"
-const baseURL = "https://plentymore.cn";
+const baseURL = "http://10.0.46.20:8080";
 // const baseURL = "/api";
 
 //  登录相关
@@ -72,6 +77,10 @@ const logout = () => {
 const checkToken = token => {
   return axios.get(`${baseURL}/tokens`, token);
 };
+
+const updateUserInfo = (uid,user) =>{
+  return axios.put(`${baseURL}/users/${uid}`,user);
+}
 
 const getVideosInfo = (fileSize, vMd5) => {
   return axios.get(`${baseURL}/videos/${fileSize}/${vMd5}`);
@@ -92,6 +101,7 @@ const getsearchBangumisIdResult = query => {
   });
 };
 
+//评论API-------------------------------
 const getRepliesByEpId = epId => {
   return axios.get(`${baseURL}/replies`,{
     params:{
@@ -109,7 +119,6 @@ const getRepliesByEpIdAndPageNum = (epId,pn) => {
   });
 };
 
-
 const getSubReplies = (prid,pn) => {
   return axios.get(`${baseURL}/replies/son`,{
     params:{
@@ -122,6 +131,15 @@ const getSubReplies = (prid,pn) => {
 const addReply = data => {
   return axios.post(`${baseURL}/replies`,data);
 };
+
+const deleteReply = rid =>{
+  return axios.delete(`${baseURL}/replies/${rid}`);
+};
+
+const postActiontoReply = (rid,action) =>{
+  return axios.post(`${baseURL}/replies/like/${rid}/${action}`);
+};
+//评论API-------------------------------
 
 const register = data => {
     return axios.post(`${baseURL}/users`,data)
@@ -137,6 +155,9 @@ export default {
   getRepliesByEpId,
   getRepliesByEpIdAndPageNum,
   addReply,
+  deleteReply,
+  postActiontoReply,
   getSubReplies,
-  register
+  register,
+  updateUserInfo
 };
