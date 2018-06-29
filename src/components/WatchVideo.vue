@@ -81,7 +81,10 @@ export default {
       episodeTotal: 0,
       searchOption: [],
       searchBangumisId: [],
-      bangumiName:"",
+      bangumiName: "",
+      replyable: true,
+      msgReplyId: "",
+      msgEpId: "",
       list: [],
       replies:[],
       page: "",
@@ -331,10 +334,53 @@ export default {
         this.page = repliesData.data.page;
       };
     },
+    async initEpisodeInfo(epId){
+      console.log('initEpisodes, epId:',epId);
+      let res = await API.getEpisodeInfoByEpId(epId);
+      let rd = res.data;
+      if(rd.code === 0){
+        console.log("episode:",rd);
+        this.bangumiName = rd.data.bangumiName;
+        this.episodeIndex = rd.data.episodeIndex;
+      }
+      else{
+        console.log('load Episode by id failled! ',rd.msg);
+      };
+    },
+    async getSpecificReply(){
+      if(this.msgReplyId){
+        console.log("getSpecificReply, rid:",this.msgReplyId);
+        let res = await API.getSpecificReply(this.msgReplyId);
+        let rd = res.data;
+        if(rd.code === 0){
+          console.log("specificReply data:",rd.data);
+          this.replies = rd.data.replies;
+          this.page = rd.data.page;
+        }
+        else{
+          console.log("can't get specific reply info!");
+        }
+      }
+    },
     updateRepliesAndPage(replies, pageInfo){
       this.replies = replies;
       this.page = pageInfo;
       this.tap("updateRepliesAndPage passed success!");
+    },
+     goAnchor(selector) {
+      let anchor = document.getElementById(selector);
+      console.log('selector:',selector);
+      console.log('anchor:',anchor);
+      if (anchor) {
+        console.log("scrollIntoView!!!");
+        anchor.scrollIntoView();
+      } else {
+          this.$message({
+          message: "评论已被删除",
+          type: "info"
+        });
+      }
+      // document.getElementById('here').scrollIntoView();
     }
   },
   mounted() {
@@ -346,6 +392,38 @@ export default {
         d.setAttribute("class", "watchVideo");
       }
     }, 1000);
+    console.log("video.vue mounted!")
+    if(this.msgReplyId && this.msgEpId){
+      console.log("go to the reply....");
+      setTimeout(() => {
+        console.log("times up ,go tt reply1")
+        // this.set();
+      //  let rr = this.$refs[this.msgReplyId];
+      //  console.log("get ref:",rr);
+      //  console.log("view more:",rr.view_more);
+      //  rr.view_more = true;
+       this.goAnchor("r-"+this.msgReplyId);
+    }, 1000);
+    }
+  },
+  created(){
+    console.log("watch video created!");
+    let epid = this.$route.params.epid;
+    let rid = this.$route.query.rid;
+    if(epid){
+      console.log('successfully get params epid:',epid);
+      this.msgEpId = epid;
+      this.episodeId = epid;
+      this.initEpisodeInfo(epid);
+    }
+    if(rid){
+       console.log('successfully get query rid:',rid);
+       this.msgReplyId = rid;
+       this.getSpecificReply();
+    }
+    else{
+      this.initComments();
+    }
   }
 };
 </script>
@@ -396,8 +474,11 @@ export default {
   display: inline-block;
 }
 .bangumi-header {
-    margin: 0 auto;
+    margin-left: 0px;
+    margin-right:  0px;
+    margin-bottom: 8px;
     height: 30px;
+    color:#20968b;
 }
 .bangumi-title {
    font-size: 18px;

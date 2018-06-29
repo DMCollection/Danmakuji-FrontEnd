@@ -101,6 +101,10 @@ const getsearchBangumisIdResult = query => {
   });
 };
 
+const getEpisodeInfoByEpId = epId =>{
+  return axios.get(`${baseURL}/episodes/${epId}`);
+}
+
 //评论API-------------------------------
 const getRepliesByEpId = epId => {
   return axios.get(`${baseURL}/replies`,{
@@ -145,6 +149,28 @@ const register = data => {
     return axios.post(`${baseURL}/users`,data)
 };
 
+
+const getNotices = (userId, type) =>{
+  return axios.get(`${baseURL}/messages/${userId}/type/${type}`,{
+    params:{
+      user_id: userId,
+      type: type
+    }
+  });
+};
+
+const countUnreadMsg = userId => {
+  return axios.get(`${baseURL}/messages/${userId}/countInfo`);
+};
+
+const getSpecificReply = rid => {
+  return axios.get(`${baseURL}/replies`,{
+    params:{
+      rid: rid
+    }
+  });
+}
+
 export default {
   login,
   logout,
@@ -159,5 +185,9 @@ export default {
   postActiontoReply,
   getSubReplies,
   register,
-  updateUserInfo
+  updateUserInfo,
+  getEpisodeInfoByEpId,
+  getNotices,
+  countUnreadMsg,
+  getSpecificReply
 };

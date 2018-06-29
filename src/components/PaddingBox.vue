@@ -11,8 +11,7 @@
         <el-pagination v-if="view_more"
                 small
                 @current-change="targetPageSub"
-                @prev-click="prevPageSub"
-                @next-click="nextPageSub"
+                :current-page.sync="root_reply.reply.cur_page"
                 :page-size="10"
                 :pager-count="11"
                 layout="prev, pager, next"
@@ -24,10 +23,9 @@
 <script>
 import API from "../api/api"
 export default {
-    props: ["sub_replies", "root_reply","view_more"],
+    props: ["sub_replies", "root_reply","view_more","sub_page"],
     data(){
         return {
-            curPage: 1
         }
     },
     methods:{
@@ -35,34 +33,35 @@ export default {
             this.tap("load subReplies, prid:"+prid+" pn:"+pn);
             let res = (await API.getSubReplies(prid,pn));
             let resData =  res.data;
+            console.log("subReplies data:",resData);
             return resData;
         },
         async targetPageSub(val){
             this.tap("targer page sub invoked!");
-            this.curPage = val;
+            this.root_reply.reply.cur_page = val;
             let prid = this.root_reply.reply.reply.replyId;
             let resData = (await this.loadSubReplies(prid,val));
             let subReplies = resData.data.replies;
             this.$emit("changeSubRepliesPage",subReplies);
-        },
-        async prevPageSub(){
-            this.tap("prevPageSub invoked!");
-            let prid = this.root_reply.reply.reply.replyId;
-            this.curPage = this.curPage -1;
-            let pn = this.curPage;
-            let resData = (await this.loadSubReplies(prid,pn));
-            let subReplies = resData.data.replies;
-            this.$emit("changeSubRepliesPage",subReplies);
-        },
-        async nextPageSub(){
-            this.tap("nextPageSub invoked!");
-            let prid = this.root_reply.reply.reply.replyId;
-            this.curPage = this.curPage + 1;
-            let pn = this.curPage;
-            let resData = (await this.loadSubReplies(prid,pn));
-            let subReplies = resData.data.replies;
-            this.$emit("changeSubRepliesPage",subReplies);
         }
+        // async prevPageSub(){
+        //     this.tap("prevPageSub invoked!");
+        //     let prid = this.root_reply.reply.reply.replyId;
+        //     this.curPage = this.curPage -1;
+        //     let pn = this.curPage;
+        //     let resData = (await this.loadSubReplies(prid,pn));
+        //     let subReplies = resData.data.replies;
+        //     this.$emit("changeSubRepliesPage",subReplies);
+        // },
+        // async nextPageSub(){
+        //     this.tap("nextPageSub invoked!");
+        //     let prid = this.root_reply.reply.reply.replyId;
+        //     this.curPage = this.curPage + 1;
+        //     let pn = this.curPage;
+        //     let resData = (await this.loadSubReplies(prid,pn));
+        //     let subReplies = resData.data.replies;
+        //     this.$emit("changeSubRepliesPage",subReplies);
+        // }
     }
 }
 </script>

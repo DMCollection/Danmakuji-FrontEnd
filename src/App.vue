@@ -87,25 +87,45 @@
   
             <el-dropdown class="message-container" placement="bottom">
                 <div>
-                  <el-badge v-if="msgnum>0" :value="msgnum" :max="99" class="item">
+                  <el-badge v-if="unreadMsg>0" :value="unreadMsg" :max="99" class="item">
                     <!-- <a class="message-pos" href="#">消息</a> -->
                     <el-button class="header-link" type="text">消息</el-button>
                   </el-badge>
                   <el-button v-else class="header-link" type="text">消息</el-button>   
                 </div>
                 <el-dropdown-menu :visibleArrow="false" class="user-dropdown" slot="dropdown">
+                        <router-link :to="{name:'snotice',params:{type:'系统通知'}}">
                         <el-dropdown-item>
-                            系统通知
+                          <el-badge v-if="unreadAtMsg>0" :value="unreadSysMsg" :max="99" class="item">
+                            <div class="notice-item" >系统通知</div>
+                          </el-badge>
+                          <div v-else class="notice-item" >系统通知</div>
                         </el-dropdown-item>
+                        </router-link>
+                        <router-link :to="{name:'rnotice',params:{type:'回复我的'}}">
                         <el-dropdown-item >
-                            <span>回复我的</span>
+                            <el-badge v-if="unreadReplyMsg>0" :value="unreadReplyMsg" :max="99" class="item">
+                            <div class="notice-item">回复我的</div>
+                          </el-badge>    
+                          <div v-else class="notice-item">回复我的</div>
                         </el-dropdown-item>
+                        </router-link>
                     <!-- <router-link class='inlineBlock' to="/admin/profile"> -->
+                        <router-link :to="{name:'anotice',params:{type:'@我的'}}">
                         <el-dropdown-item >
-                            <span>@我的</span>
+                            <el-badge v-if="unreadAtMsg>0" :value="unreadAtMsg" :max="99" class="item">
+                            <div class="notice-item">@我的</div>
+                          </el-badge>
+                          <div v-else class="notice-item">@我的</div>   
                         </el-dropdown-item>
+                        </router-link>
                     <!-- </router-link> -->
-                    <el-dropdown-item divided><span style="display:block;">我的消息</span></el-dropdown-item>
+                    <el-dropdown-item >
+                      <el-badge v-if="unreadLikeMsg>0" :value="unreadLikeMsg" :max="99" class="item">
+                            <div class="notice-item">收到的赞</div>
+                          </el-badge>
+                             <div v-else class="notice-item">收到的赞</div>
+                      </el-dropdown-item>
                 </el-dropdown-menu>
             </el-dropdown>
   
@@ -127,6 +147,7 @@ import HelloWorld from "./components/HelloWorld.vue";
 import WatchVideo from "./components/WatchVideo.vue";
 import Register from "./components/Register.vue";
 import PersonalStation from "./components/PersonalStation.vue";
+import MessageStation from "./components/MessageStation.vue";
 import Login from "./components/Login.vue";
 import Footer from "./components/Footer.vue";
 import API from "./api/api.js";
@@ -138,6 +159,7 @@ export default {
     WatchVideo,
     Register,
     PersonalStation,
+    MessageStation,
     Login,
     'myfooter':Footer
   },
@@ -157,7 +179,12 @@ export default {
         video: "video",
         space: "space"
       },
-      curUserFace: ""
+      curUserFace: "",
+      unreadMsg: 0,
+      unreadSysMsg: 0,
+      unreadReplyMsg: 0,
+      unreadAtMsg: 0,
+      unreadLikeMsg: 0
     };
   },
   methods: {
@@ -246,6 +273,33 @@ export default {
     },
     getCurUserFace() {
       return localStorage.getItem("face");
+    },
+    async countUnreadMsg(){
+      let uid = localStorage.getItem("USER_ID");
+      if(uid){
+        let res = await API.countUnreadMsg(uid);
+        let rd = res.data;
+        if(rd.code === 0){
+          console.log("update msgCount:",rd.data.total);
+          this.unreadMsg = rd.data.total;
+          this.unreadSysMsg = rd.data.system;
+          this.unreadReplyMsg = rd.data.reply;
+          this.unreadAtMsg = rd.data.at;
+          this.unreadLikeMsg = rd.data.like;
+        }
+        else{
+          this.unreadMsg = 0;
+          this.unreadSysMsg = 0;
+          this.unreadReplyMsg = 0;
+          this.unreadAtMsg = 0;
+          this.unreadLikeMsg = 0;
+          console.log("no new msg");
+        }
+      }
+      else{
+        console.log("未登陆");
+      }
+      
     }
   },
 
@@ -273,6 +327,10 @@ export default {
     }
     this.curUserFace = this.getCurUserFace();
     console.log("getCurUserFace:", this.curUserFace);
+  },
+  created(){
+    console.log("app created!");
+    this.countUnreadMsg();
   }
 };
 </script>
@@ -379,27 +437,15 @@ a {
     box-shadow: 0 0 1px 0px rgba(0,0,0,.1);
 } */
 
-/* @supports (-webkit-backdrop-filter: blur(10px)) or (backdrop-filter: blur(10px)) {
-    .appheader {
-        background: rgba(0, 0, 0, 0.5) ;
-        -webkit-backdrop-filter: blur(10px) ;
-        backdrop-filter: blur(10px) ;
-        color: #eee ;
-    }
-}
-@supports not ((-webkit-backdrop-filter: blur(10px)) or (backdrop-filter: blur(10px))) {
-    .appheader {
-        background: #fff ;
-        color: #333 ;
-        box-shadow: 0px 10px 30px rgba(0, 0, 0, .18), 0px 6px 10px rgba(0, 0, 0, .22) ;
-    }
-} */
 .header-link {
   font-weight: 700;
   padding: 0.25em 0.75em;
   border-bottom: 3px solid transparent;
   font-size: 0.942666666666667rem;
   color: #f9efc1 !important;
+}
+.el-badge__content {
+  border: 0;
 }
 
 /* body {

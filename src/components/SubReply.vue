@@ -1,5 +1,5 @@
 <template>
-    <div class="reply-item reply-wrap">
+    <div class="reply-item reply-wrap" :id="'r-'+m_reply.reply.replyId">
         <a href="#" class="reply-face">
           <img :src="m_reply.user.face?m_reply.user.face:'/static/defaultface.png'" alt="">
         </a>
@@ -88,6 +88,13 @@ export default {
                 }
             }
         }
+    },
+    created(){
+        console.log("SubReply created!");
+        console.log("m_reply:",this.m_reply);
+    },
+    mounted(){
+        console.log("SubReply mounted!");
     }
 }
 </script>
