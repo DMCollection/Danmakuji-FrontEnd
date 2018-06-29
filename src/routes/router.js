@@ -9,7 +9,10 @@ import AvatarInfo from "../components/AvatarInfo.vue";
 import Login from "../components/Login.vue";
 import Personal from "../components/PersonDetailInfo.vue";
 import Security from "../components/SecurityInfo.vue";
-
+import MessageStation from "../components/MessageStation.vue";
+import SystemNotice from "../components/SystemNotice.vue";
+import ReplyNotice from "../components/ReplyNotice.vue";
+import AtNotice from "../components/AtNotice.vue";
 Vue.use(VueRouter);
 
 const routes = [
@@ -17,6 +20,7 @@ const routes = [
     { path: "/video", name: "video", component: WatchVideo },
     { path: "/register", name: "register", component: Register},
     { path: "/login", name: "login", component: Login},
+    { path: "/video/:epid", name: "video", component: WatchVideo },
 
     // { path: "/space", name: "space", component: PersonalStation},
     // { path: "/space/avatar",name: "avatar",component: AvatarInfo},
@@ -31,6 +35,17 @@ const routes = [
             // { path: 'personalInfo', component: PersonalInfo, name: '个人信息' }
         ]
       },
+      {
+          path: '/message',
+          component: MessageStation,
+          name: 'message',
+          children: [
+              {path: 'snotice', component: SystemNotice, name: 'snotice'},
+              {path: 'rnotice', component: ReplyNotice, name: 'rnotice'},
+              {path: 'anotice', component: AtNotice, name: 'anotice'}
+          ]
+
+      }
       
 
 ];

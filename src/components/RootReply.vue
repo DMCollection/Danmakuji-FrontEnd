@@ -1,7 +1,7 @@
 <template>
-    <div class="list-item reply-wrap">
+    <div class="list-item reply-wrap" :id="'r-'+reply.reply.reply.replyId">
         <div class="user-face">
-            <a href="#" target="_blank" data-usercard-mid="27629197">
+            <a href="#">
               <img :src="reply.reply.user.face?reply.reply.user.face:'/static/defaultface.png'" alt="">
             </a>
             <!-- <a href="#" class="pendant" data-usercard-mid="27629197" target="_blank">
@@ -18,7 +18,7 @@
             </div>
             <p class="text">{{reply.reply.reply.content}}</p>
             <div class="info">
-                <span class="floor">#{{reply_total-index}}</span>
+                <span class="floor">#{{reply.reply.reply.floor}}</span>
                 <span class="plad">来自<a href="#/video" target="_blank">darker.online</a></span>
                 <span class="time">{{new Date(reply.reply.reply.createTime).toLocaleString()}}</span>
                 <span @click="postAttitide(reply.reply.reply.replyId)" :class="{liked:reply.reply.likeStatus}" class="like "><i></i><span>{{reply.reply.reply.rLike}}</span></span>
@@ -153,6 +153,17 @@ export default {
             this.reply.replies = sub_replies;
         }
     },
+    created(){
+        if(this.reply.reply.is_target === 1){
+            this.view_more = true;
+            console.log("view more ,true");
+        }
+        console.log("RootReply created!");
+        console.log("reply:",this.reply);
+    },
+    mounted(){
+        console.log("RootReply mounted!");
+    }
     
 }
 </script>

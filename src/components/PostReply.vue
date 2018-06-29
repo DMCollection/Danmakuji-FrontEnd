@@ -190,7 +190,7 @@ export default {
     border: 1px solid #e5e9ef; */
     overflow: auto;
     border-radius: 4px;
-    color: #555;
+    color: #999;
     width: 100%!important;
     height: 65px;
     transition: 0s;

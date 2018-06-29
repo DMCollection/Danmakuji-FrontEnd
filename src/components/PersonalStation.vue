@@ -20,6 +20,8 @@
 
 <script>
 import AvatarInfo from "./AvatarInfo.vue"
+import Personal from "./PersonDetailInfo.vue"
+import Security from "./SecurityInfo.vue"
 
 export default {
   data() {
@@ -28,7 +30,9 @@ export default {
     };
   },
   components: {
-    AvatarInfo
+    AvatarInfo,
+    Personal,
+    Security
   },
   methods: {
 			
