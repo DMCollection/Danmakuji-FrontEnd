@@ -13,50 +13,51 @@ import MessageStation from "../components/MessageStation.vue";
 import SystemNotice from "../components/SystemNotice.vue";
 import ReplyNotice from "../components/ReplyNotice.vue";
 import AtNotice from "../components/AtNotice.vue";
+import LikeNotice from "../components/LikeNotice.vue";
+import EmailVerify from "../components/EmailVerify.vue";
+import UserProfile from "../components/UserProfile.vue";
 Vue.use(VueRouter);
 
 const routes = [
-    { path: "/", name: "HelloWorld", component: HelloWorld },
-    { path: "/video", name: "video", component: WatchVideo },
-    { path: "/register", name: "register", component: Register},
-    { path: "/login", name: "login", component: Login},
-    { path: "/video/:epid", name: "video", component: WatchVideo },
+  { path: "/", name: "HelloWorld", component: HelloWorld },
+  { path: "/video", name: "video", component: WatchVideo },
+  { path: "/register", name: "register", component: Register },
+  { path: "/login", name: "login", component: Login },
+  { path: "/video/:epid", name: "video", component: WatchVideo },
+  { path: "/vemail", name: "vemail", component: EmailVerify },
+  { path: "/user/:uid", name: "user", component: UserProfile },
 
-    // { path: "/space", name: "space", component: PersonalStation},
-    // { path: "/space/avatar",name: "avatar",component: AvatarInfo},
-    {
-        path: '/space',
-        component: PersonalStation,
-        name: 'space',
-        children: [
-            { path: 'avatar', component: AvatarInfo, name: 'avatar' },
-            { path: 'personal', component: Personal, name: 'personal' },
-            { path: 'security', component: Security, name: 'security' }
-            // { path: 'personalInfo', component: PersonalInfo, name: '个人信息' }
-        ]
-      },
-      {
-          path: '/message',
-          component: MessageStation,
-          name: 'message',
-          children: [
-              {path: 'snotice', component: SystemNotice, name: 'snotice'},
-              {path: 'rnotice', component: ReplyNotice, name: 'rnotice'},
-              {path: 'anotice', component: AtNotice, name: 'anotice'}
-          ]
-
-      }
-      
-
+  // { path: "/space", name: "space", component: PersonalStation},
+  // { path: "/space/avatar",name: "avatar",component: AvatarInfo},
+  {
+    path: "/space",
+    component: PersonalStation,
+    name: "space",
+    children: [
+      { path: "avatar", component: AvatarInfo, name: "avatar" },
+      { path: "personal", component: Personal, name: "personal" },
+      { path: "security", component: Security, name: "security" }
+      // { path: 'personalInfo', component: PersonalInfo, name: '个人信息' }
+    ]
+  },
+  {
+    path: "/message",
+    component: MessageStation,
+    name: "message",
+    children: [
+      { path: "snotice", component: SystemNotice, name: "snotice" },
+      { path: "rnotice", component: ReplyNotice, name: "rnotice" },
+      { path: "anotice", component: AtNotice, name: "anotice" },
+      { path: "lnotice", component: LikeNotice, name: "lnotice" }
+    ]
+  }
 ];
 
 // 3. 创建 router 实例，然后传 `routes` 配置
 // 你还可以传别的配置参数, 不过先这么简单着吧。
 const router = new VueRouter({
-    // mode: 'history',
-    routes // （缩写）相当于 routes: routes
+  // mode: 'history',
+  routes // （缩写）相当于 routes: routes
 });
-
-
 
 export default router;

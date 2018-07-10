@@ -1,7 +1,7 @@
 <template>
     <div class="f-container">
         <p class="site-footer__copyright">© 2018 Axosoft, LLC. &nbsp;Made with 
-            <i class="fa fa-heart"></i> in Scottsdale, Arizona.
+            <img class="heart" src="/static/love.png"/> in Scottsdale, Arizona.
             </p>
     </div>
 </template>
@@ -25,20 +25,13 @@ export default {
 p {
     font-family: 'Open Sans',sans-serif;
 }
-.fa-heart {
-    color: #f33800;
+.heart {
+    width: 20px;
+    height: 20px;
     margin-left: .2em;
     margin-right: .2em;
 }
-.fa {
-    display: inline-block;
-    font: 14px/1 FontAwesome;
-    font-size: inherit;
-    text-rendering: auto;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-.fa-heart:before {
+.heart:before {
     content: "\f004";
 }
 </style>

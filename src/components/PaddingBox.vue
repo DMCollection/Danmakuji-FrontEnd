@@ -8,7 +8,7 @@
         <a href="javascript:;" class="tcd-number">4</a>
         <span class="dian">...</span><a href="javascript:;" class="tcd-number">28</a>
         <a href="javascript:;" class="next">下一页</a> -->
-        <el-pagination v-if="view_more"
+        <el-pagination v-show="view_more"
                 small
                 @current-change="targetPageSub"
                 :current-page.sync="root_reply.reply.cur_page"

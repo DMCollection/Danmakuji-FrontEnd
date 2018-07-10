@@ -47,8 +47,6 @@
     </div>
       <el-button type="primary" slot="reference" circle ><i></i></el-button>
   </el-popover> -->
-
-
             <el-dropdown class="avatar-container" placement="bottom">
                 <div class="avatar-wrapper">
                     <img class="user-avatar" :src="curUserFace?curUserFace:'/static/defaultface.png'">
@@ -64,7 +62,7 @@
                               <span style="display:block;">个人中心</span>                        
                         </el-dropdown-item>
                         </router-link>
-                        <el-dropdown-item @click="logout"><span style="display:block;">退出登录</span></el-dropdown-item>
+                        <div @click="logout"><el-dropdown-item><span style="display:block;">退出登录</span></el-dropdown-item></div>
                 </el-dropdown-menu>
                 <el-dropdown-menu v-else :visibleArrow="false" class="user-dropdown" slot="dropdown">
                         <el-dropdown-item style="background-color:#fff">
@@ -94,23 +92,28 @@
                   <el-button v-else class="header-link" type="text">消息</el-button>   
                 </div>
                 <el-dropdown-menu :visibleArrow="false" class="user-dropdown" slot="dropdown">
+                        <div @click="clearMsgCount('system')">
                         <router-link :to="{name:'snotice',params:{type:'系统通知'}}">
                         <el-dropdown-item>
-                          <el-badge v-if="unreadAtMsg>0" :value="unreadSysMsg" :max="99" class="item">
-                            <div class="notice-item" >系统通知</div>
+                          <el-badge v-if="unreadSysMsg>0" :value="unreadSysMsg" :max="99" class="item">
+                            <div class="notice-item">系统通知</div>
                           </el-badge>
                           <div v-else class="notice-item" >系统通知</div>
                         </el-dropdown-item>
                         </router-link>
+                        </div>
+                        <div @click="clearMsgCount('reply')">
                         <router-link :to="{name:'rnotice',params:{type:'回复我的'}}">
                         <el-dropdown-item >
                             <el-badge v-if="unreadReplyMsg>0" :value="unreadReplyMsg" :max="99" class="item">
-                            <div class="notice-item">回复我的</div>
+                            <div class="notice-item" >回复我的</div>
                           </el-badge>    
                           <div v-else class="notice-item">回复我的</div>
                         </el-dropdown-item>
                         </router-link>
+                        </div>
                     <!-- <router-link class='inlineBlock' to="/admin/profile"> -->
+                        <div @click="clearMsgCount('at')">
                         <router-link :to="{name:'anotice',params:{type:'@我的'}}">
                         <el-dropdown-item >
                             <el-badge v-if="unreadAtMsg>0" :value="unreadAtMsg" :max="99" class="item">
@@ -119,13 +122,18 @@
                           <div v-else class="notice-item">@我的</div>   
                         </el-dropdown-item>
                         </router-link>
+                        </div>
                     <!-- </router-link> -->
+                    <div @click="clearMsgCount('like')">
+                    <router-link :to="{name:'lnotice',params:{type:'收到的赞'}}">
                     <el-dropdown-item >
                       <el-badge v-if="unreadLikeMsg>0" :value="unreadLikeMsg" :max="99" class="item">
-                            <div class="notice-item">收到的赞</div>
+                            <div class="notice-item" >收到的赞</div>
                           </el-badge>
-                             <div v-else class="notice-item">收到的赞</div>
-                      </el-dropdown-item>
+                             <div v-else class="notice-item" >收到的赞</div>
+                    </el-dropdown-item>
+                    </router-link>
+                    </div>
                 </el-dropdown-menu>
             </el-dropdown>
   
@@ -150,6 +158,8 @@ import PersonalStation from "./components/PersonalStation.vue";
 import MessageStation from "./components/MessageStation.vue";
 import Login from "./components/Login.vue";
 import Footer from "./components/Footer.vue";
+import EmailVerify from "./components/EmailVerify.vue";
+import UserProfile from "./components/UserProfile.vue";
 import API from "./api/api.js";
 
 export default {
@@ -161,7 +171,9 @@ export default {
     PersonalStation,
     MessageStation,
     Login,
-    'myfooter':Footer
+    EmailVerify,
+    UserProfile,
+    myfooter: Footer
   },
   data() {
     return {
@@ -184,7 +196,8 @@ export default {
       unreadSysMsg: 0,
       unreadReplyMsg: 0,
       unreadAtMsg: 0,
-      unreadLikeMsg: 0
+      unreadLikeMsg: 0,
+      intervalId: ""
     };
   },
   methods: {
@@ -260,6 +273,7 @@ export default {
       return localStorage.getItem("loginUserName");
     },
     async logout() {
+      console.log("loogout!!!");
       let res = await API.logout();
       if (res.data.code === 0 || res.data.msg === "登出成功") {
         this.isLogin = false;
@@ -274,20 +288,19 @@ export default {
     getCurUserFace() {
       return localStorage.getItem("face");
     },
-    async countUnreadMsg(){
+    async countUnreadMsg() {
       let uid = localStorage.getItem("USER_ID");
-      if(uid){
+      if (uid) {
         let res = await API.countUnreadMsg(uid);
         let rd = res.data;
-        if(rd.code === 0){
-          console.log("update msgCount:",rd.data.total);
+        if (rd.code === 0) {
+          console.log("update msgCount:", rd.data.total);
           this.unreadMsg = rd.data.total;
           this.unreadSysMsg = rd.data.system;
           this.unreadReplyMsg = rd.data.reply;
           this.unreadAtMsg = rd.data.at;
           this.unreadLikeMsg = rd.data.like;
-        }
-        else{
+        } else {
           this.unreadMsg = 0;
           this.unreadSysMsg = 0;
           this.unreadReplyMsg = 0;
@@ -295,11 +308,33 @@ export default {
           this.unreadLikeMsg = 0;
           console.log("no new msg");
         }
-      }
-      else{
+      } else {
         console.log("未登陆");
       }
-      
+    },
+    clearMsgCount(type) {
+      console.log("clear msgCount");
+      switch (type) {
+        case "reply":
+          console.log("clean replyMsgCount!");
+          this.unreadMsg -= this.unreadReplyMsg;
+          this.unreadReplyMsg = 0;
+          break;
+        case "system":
+          console.log("clean sysMsgCount!");
+          this.unreadMsg -= this.unreadSysMsg;
+          this.unreadSysMsg = 0;
+          break;
+        case "like":
+          console.log("clean likeMsgCount!");
+          this.unreadMsg -= this.unreadLikeMsg;
+          this.unreadLikeMsg = 0;
+          break;
+        case "at":
+          console.log("clean atMsgCount!");
+          this.unreadMsg -= this.unreadAtMsg;
+          this.unreadAtMsg = 0;
+      }
     }
   },
 
@@ -328,9 +363,30 @@ export default {
     this.curUserFace = this.getCurUserFace();
     console.log("getCurUserFace:", this.curUserFace);
   },
-  created(){
+  created() {
     console.log("app created!");
     this.countUnreadMsg();
+    if (this.checkLocalStorage()) {
+      if (
+        localStorage.getItem("USER_ID") &&
+        localStorage.getItem("JWT_TOKEN") &&
+        localStorage.getItem("loginUserName")
+       ) {
+         this.isLogin = true;
+         console.log("set isLogin true!");
+       }
+
+        if (localStorage.getItem("USER_ID")) {
+          this.intervalId = setInterval(() => {
+            this.countUnreadMsg();
+          }, 60000);
+        }
+    }
+  },
+  beforeDestroy() {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
   }
 };
 </script>
@@ -448,6 +504,9 @@ a {
   border: 0;
 }
 
+.notice-item {
+  width: 100% !important;
+}
 /* body {
   background-image: url(/static/star-background.jpg);
 } */

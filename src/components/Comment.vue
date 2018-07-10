@@ -18,7 +18,7 @@
           </div>
           <post-reply v-on:updateRootComment="updateRootComment" :is_top="true" :episode_id="episode_id"></post-reply>
           <div v-show="replies.length>0" class="comment-list">
-              <root-reply :ref="reply.reply.reply.replyId" v-for="(reply,index) in replies" :reply_total="replies.length" :index="index" :replies:="replies" :reply="reply" :key="reply.reply.reply.replyId" :episode_id="episode_id"></root-reply>
+              <root-reply v-for="(reply,index) in replies" :reply_total="replies.length" :index="index" :replies:="replies" :reply="reply" :key="reply.reply.reply.replyId" :episode_id="episode_id"></root-reply>
           </div>
           <div class="bottom-page paging-box-big">
               <el-pagination v-if="page.parentTotalSize>20"
@@ -29,7 +29,7 @@
               layout="total, prev, pager, next, jumper" :total="page.parentTotalSize">
               </el-pagination>
           </div>
-          <post-reply v-if="replies.length>9" v-on:updateRootComment="updateRootComment" :is_top="true" :episode_id="episode_id"></post-reply>
+          <!-- <post-reply v-if="replies.length>9" v-on:updateRootComment="updateRootComment" :is_top="true" :episode_id="episode_id"></post-reply> -->
         </div>
         <!-- <emoji-box></emoji-box> -->
       </div>
