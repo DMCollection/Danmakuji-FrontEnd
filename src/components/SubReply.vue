@@ -1,11 +1,11 @@
 <template>
     <div class="reply-item reply-wrap" :id="'r-'+m_reply.reply.replyId">
-        <a href="#" class="reply-face">
+        <a :href="'#/user/'+m_reply.user.uid" target="_blank" class="reply-face">
           <img :src="m_reply.user.face?m_reply.user.face:'/static/defaultface.png'" alt="">
         </a>
         <div class="reply-con">
             <div class="user">
-                <a href="#" class="name vip-red-name">{{m_reply.user.nick}}</a>
+                <a :href="'#/user/'+m_reply.user.uid" target="_blank" class="name vip-red-name">{{m_reply.user.nick}}</a>
                 <!-- <a href="https://www.bilibili.com/blackboard/help.html#%E4%BC%9A%E5%91%98%E7%AD%89%E7%BA%A7%E7%9B%B8%E5%85%B3" target="_blank"><i class="level l4"></i></a> -->
                 <span class="text-con">{{m_reply.reply.content}}</span>
             </div>
@@ -88,13 +88,6 @@ export default {
                 }
             }
         }
-    },
-    created(){
-        console.log("SubReply created!");
-        console.log("m_reply:",this.m_reply);
-    },
-    mounted(){
-        console.log("SubReply mounted!");
     }
 }
 </script>

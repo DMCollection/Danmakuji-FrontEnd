@@ -30,7 +30,11 @@
            
         <router-link :to="{name:'anotice'}">
             <el-menu-item @click="changeMsgTypeTitle('@我的')" class="nav-item" index="3">@我的</el-menu-item>
-        </router-link>      
+        </router-link>
+
+        <router-link :to="{name:'lnotice'}">
+            <el-menu-item @click="changeMsgTypeTitle('收到的赞')" class="nav-item" index="4">收到的赞</el-menu-item>
+        </router-link> 
     </el-menu>
   </el-aside>
   

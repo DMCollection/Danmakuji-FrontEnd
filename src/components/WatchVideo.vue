@@ -122,7 +122,7 @@ export default {
         // },
         danmaku: {
           id: "null",
-          api: "http://10.0.46.28:8080/dplayer/",
+          api: "/dplayer/",
           token: "tokendemo",
           maximum: 1000,
           // addition: ["https://api.prprpr.me/dplayer/bilibili?aid=4157142"],
@@ -290,7 +290,7 @@ export default {
         },
         {
           id: danmakuId,
-          api: "http://10.0.46.28:8080/dplayer/",
+          api: "/dplayer/",
           token: localStorage.getItem("JWT_TOKEN"),
           maximum: 1000,
           // addition: ['https://api.prprpr.me/dplayer/bilibili?aid=4157142'],
@@ -422,7 +422,9 @@ export default {
        this.getSpecificReply();
     }
     else{
-      this.initComments();
+      if(epid){
+        this.initComments();
+      }
     }
   }
 };

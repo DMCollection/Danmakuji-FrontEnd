@@ -127,8 +127,10 @@ export default {
                     this.tap("has_reply_info and post success");
                     this.$emit("postReplySuccess");
                 }
+                console.log("rd:",resData);
                 let newReply = resData.data;
                 if(postCommData.is_parent === 1){
+                    console.log("newReply:",newReply);
                     this.tap("update RootComment!");
                     this.$emit("updateRootComment",newReply);
                 }

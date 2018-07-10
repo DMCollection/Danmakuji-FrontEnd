@@ -10,18 +10,16 @@ axios.interceptors.request.use(
       // 判断是否存在token，如果存在的话，则每个http header都加上token
       config.headers.Authorization = `${localStorage.JWT_TOKEN}`;
     }
-    if(`!${localStorage.ClientId}`){
-      localStorage.setItem("ClientId",(new Date()-0));
-    };
+    if (`!${localStorage.ClientId}`) {
+      localStorage.setItem("ClientId", new Date() - 0);
+    }
     config.headers.ClientId = `${localStorage.ClientId}`;
-    console.log("client-id:",`${localStorage.ClientId}`);
     return config;
   },
   err => {
     return Promise.reject(err);
   }
 );
-
 
 // http响应拦截器
 axios.interceptors.response.use(
@@ -63,7 +61,8 @@ axios.interceptors.response.use(
 );
 
 //本地开发请设置为"/api"
-const baseURL = "http://10.0.46.20:8080";
+// const baseURL = "http://207.148.103.82:8080";
+const baseURL = "";
 // const baseURL = "/api";
 
 //  登录相关
@@ -78,9 +77,9 @@ const checkToken = token => {
   return axios.get(`${baseURL}/tokens`, token);
 };
 
-const updateUserInfo = (uid,user) =>{
-  return axios.put(`${baseURL}/users/${uid}`,user);
-}
+const updateUserInfo = (uid, user) => {
+  return axios.put(`${baseURL}/users/${uid}`, user);
+};
 
 const getVideosInfo = (fileSize, vMd5) => {
   return axios.get(`${baseURL}/videos/${fileSize}/${vMd5}`);
@@ -101,31 +100,31 @@ const getsearchBangumisIdResult = query => {
   });
 };
 
-const getEpisodeInfoByEpId = epId =>{
+const getEpisodeInfoByEpId = epId => {
   return axios.get(`${baseURL}/episodes/${epId}`);
-}
+};
 
 //评论API-------------------------------
 const getRepliesByEpId = epId => {
-  return axios.get(`${baseURL}/replies`,{
-    params:{
-      epId:epId
+  return axios.get(`${baseURL}/replies`, {
+    params: {
+      epId: epId
     }
   });
 };
 
-const getRepliesByEpIdAndPageNum = (epId,pn) => {
-  return axios.get(`${baseURL}/replies`,{
-    params:{
-      epId:epId,
-      pn:pn
+const getRepliesByEpIdAndPageNum = (epId, pn) => {
+  return axios.get(`${baseURL}/replies`, {
+    params: {
+      epId: epId,
+      pn: pn
     }
   });
 };
 
-const getSubReplies = (prid,pn) => {
-  return axios.get(`${baseURL}/replies/son`,{
-    params:{
+const getSubReplies = (prid, pn) => {
+  return axios.get(`${baseURL}/replies/son`, {
+    params: {
       prid: prid,
       pn: pn
     }
@@ -133,28 +132,30 @@ const getSubReplies = (prid,pn) => {
 };
 
 const addReply = data => {
-  return axios.post(`${baseURL}/replies`,data);
+  return axios.post(`${baseURL}/replies`, data);
 };
 
-const deleteReply = rid =>{
+const deleteReply = rid => {
   return axios.delete(`${baseURL}/replies/${rid}`);
 };
 
-const postActiontoReply = (rid,action) =>{
+const postActiontoReply = (rid, action) => {
   return axios.post(`${baseURL}/replies/like/${rid}/${action}`);
 };
 //评论API-------------------------------
 
 const register = data => {
-    return axios.post(`${baseURL}/users`,data)
+  return axios.post(`${baseURL}/users`, data);
 };
 
+const getNotices = (userId, type) => {
+  return axios.get(`${baseURL}/messages/${userId}/type/${type}`);
+};
 
-const getNotices = (userId, type) =>{
-  return axios.get(`${baseURL}/messages/${userId}/type/${type}`,{
-    params:{
-      user_id: userId,
-      type: type
+const getNoticesBypn = (userId, type, pn) => {
+  return axios.get(`${baseURL}/messages/${userId}/type/${type}`, {
+    params: {
+      pn: pn
     }
   });
 };
@@ -164,11 +165,19 @@ const countUnreadMsg = userId => {
 };
 
 const getSpecificReply = rid => {
-  return axios.get(`${baseURL}/replies`,{
-    params:{
+  return axios.get(`${baseURL}/replies`, {
+    params: {
       rid: rid
     }
   });
+};
+
+const verifyEmail = (uid, key) => {
+  return axios.get(`${baseURL}/auth/verify/uid/${uid}/key/${key}`);
+};
+
+const getUserInfoByUid = uid => {
+  return axios.get(`${baseURL}/users/${uid}`);
 }
 
 export default {
@@ -188,6 +197,9 @@ export default {
   updateUserInfo,
   getEpisodeInfoByEpId,
   getNotices,
+  getNoticesBypn,
   countUnreadMsg,
-  getSpecificReply
+  getSpecificReply,
+  verifyEmail,
+  getUserInfoByUid
 };
