@@ -1,9 +1,11 @@
 <template>
-  <div id="app">
+  <div id="app" style="height: 100%;">
     <!-- <img src="./assets/logo.png"> -->
-<el-container>
+<el-container style="height: 100%">
   <!-- <el-header class="appheader" style="border-bottom: solid 1px #e6e6e6;box-shadow: 0 0 1px 0px rgba(0,0,0,.1);"> -->
- <el-header class="appheader" style="background-color: rgba(20,20,34,0.9);box-shadow: 0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.24);">
+ <el-header class="appheader"
+            style="background-color: rgba(20,20,34,0.9);
+            box-shadow: 0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.24);">
  <div style="width:980px;margin:0 auto;">
 
 <el-menu
@@ -140,10 +142,14 @@
 </el-menu>
 </div>
   </el-header>
-  <el-main style="background-color: #141422;">
-        <router-view></router-view>
+
+
+
+  <el-main style="background-color: #141422;overflow: initial;">
+      <router-view></router-view>
   </el-main>
   <myfooter></myfooter>
+
 </el-container>
 
 
@@ -447,10 +453,10 @@ a {
   border-radius: 50%;
 }
 .message-container {
-  height: 50px;
+  height: 40px;
   display: inline-block;
   position: absolute;
-  top: 10px;
+  top: 16px;
   right: 70px;
 }
 .el-menu--horizontal {
@@ -507,6 +513,7 @@ a {
 .notice-item {
   width: 100% !important;
 }
+
 /* body {
   background-image: url(/static/star-background.jpg);
 } */

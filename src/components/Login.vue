@@ -94,7 +94,7 @@ export default {
 
       if (rd.code === 2002 || rd.data == null) {
         this.$message({
-          message: "账号不存在或密码错误",
+          message: rd.msg,
           type: "error"
         });
         return false;

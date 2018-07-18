@@ -16,6 +16,7 @@ import AtNotice from "../components/AtNotice.vue";
 import LikeNotice from "../components/LikeNotice.vue";
 import EmailVerify from "../components/EmailVerify.vue";
 import UserProfile from "../components/UserProfile.vue";
+import PostBangumi from "../components/PostBangumi.vue";
 Vue.use(VueRouter);
 
 const routes = [
@@ -36,7 +37,8 @@ const routes = [
     children: [
       { path: "avatar", component: AvatarInfo, name: "avatar" },
       { path: "personal", component: Personal, name: "personal" },
-      { path: "security", component: Security, name: "security" }
+      { path: "security", component: Security, name: "security" },
+      { path: "postBangumi", component: PostBangumi, name:"postBangumi"}
       // { path: 'personalInfo', component: PersonalInfo, name: '个人信息' }
     ]
   },

@@ -1,7 +1,7 @@
 <template>
     <div class="f-container">
-        <p class="site-footer__copyright">© 2018 Axosoft, LLC. &nbsp;Made with 
-            <img class="heart" src="/static/love.png"/> in Scottsdale, Arizona.
+        <p class="site-footer__copyright">© 2018 Darker. &nbsp;Power By
+            <img class="heart" src="/static/love.png"/> in Earth.
             </p>
     </div>
 </template>
