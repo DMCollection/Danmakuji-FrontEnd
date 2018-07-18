@@ -40,6 +40,9 @@
          </div>
         </div>
          </el-card>
+      <div v-show="replyNotices.length===0">
+        <h1>暂无@我的</h1>
+      </div>
     </div>
         </el-scrollbar>
     </div>
