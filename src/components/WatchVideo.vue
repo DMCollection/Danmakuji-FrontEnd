@@ -68,9 +68,16 @@
             <el-form-item label="总集数" label-width="120">
               <el-input type="text" v-model="postBangumi.episodeTotal" style="width: 80px;display: inherit;"></el-input>
             </el-form-item>
+            <el-form-item label="封面">
+              <input type="hidden" v-model="postBangumi.thumb">
+              <el-button type="primary" size="mini" style="float: left;margin: 7px 0;border: none" @click="show=true">上传封面</el-button>
+            </el-form-item>
+            <el-form-item>
+              <img v-show="postBangumi.thumb" :src="postBangumi.thumb" alt="加载不出来呢" width="100%" style="border-radius: 5px;">
+            </el-form-item>
             <el-form-item style="margin-bottom: 0">
               <div class="explain-container">
-                <span><strong>* 若本次提交被收录后可按个人喜好设置该作封面 *</strong></span><br>
+                <span><strong>* 若本次提交被收录后封面仍可修改 *</strong></span><br>
               </div>
             </el-form-item>
           </el-form>
@@ -81,6 +88,20 @@
             <el-button type="primary" @click="sendPostBangumiInfo" size="small">确 定</el-button>
           </div>
         </el-dialog>
+
+        <my-upload field="image"
+                   @crop-success="cropSuccess"
+                   @crop-upload-success="cropUploadSuccess"
+                   @crop-upload-fail="cropUploadFail"
+                   v-model="show"
+                   :width="620"
+                   :height="350"
+                   :noCircle="true"
+                   :url="GLOBAL.uploadURL"
+                   :headers="GLOBAL.uploadHEADERS"
+                   :langExt="langExtObj"
+                   img-format="jpg"
+        ></my-upload>
 
 
         <el-collapse-item v-show="!hasInfo " v-on:click="hasInfo = !hasInfo" title="未能正确识别番剧,请手动输入搜索" name="2">
@@ -151,6 +172,8 @@
   // import "DPlayer/dist/DPlayer.min.css";
   import 'vue-dplayer/dist/vue-dplayer.css'
   import API from "../api/api";
+  import 'babel-polyfill';
+  import myUpload from 'vue-image-crop-upload';
   // import "../assets/vue-dplayer.min.css";
 
   export default {
@@ -164,6 +187,7 @@
         searchBangumisId: [],
         bangumiName: "",
         replyable: true,
+        videoId:"",
         msgReplyId: "",
         msgEpId: "",
         list: [],
@@ -192,6 +216,10 @@
           hasZeroIndex: 0,
           thumb: ""
         },
+        langExtObj:{
+          preview:"封面预览"
+        },
+        show:false,
         playerOpts: {
           autoplay: true,
           theme: "#FADFA3",
@@ -202,6 +230,7 @@
           // logo: '/static/logo.png',
           volume: 0.7,
           mutex: true,
+          opacity:1,
 
           video: {
             url: this.videoURL,
@@ -245,7 +274,8 @@
     components: {
       "d-player": VueDPlayer,
       "post-reply": PostReply,
-      "comment": Comment
+      "comment": Comment,
+      "myUpload":myUpload
     },
     watch: {
       searchBangumisId(val) {
@@ -538,6 +568,18 @@
         this.tap("setEpId in:" + videosInfo.episodeId);
         this.tap("bangumiName:" + this.bangumiName);
         this.tap("episodeIndex:" + this.episodeIndex);
+        this.videoId = videosInfo.videoId;
+        this.sendMatchSuccessVideoInfo();
+      },
+      async sendMatchSuccessVideoInfo(){
+        let matchSuccessData = {
+          v:this.videoId
+        };
+        let res = await API.matchVideoSuccess(matchSuccessData);
+        let rd = res.data;
+        if (rd === 0) {
+          console.log("sendMatchSuccessVideoInfo");
+        }
       },
       closeDialog() {
         if (!this.isMatch) {
@@ -558,11 +600,13 @@
         let bangumiName = this.postBangumi.bangumiName;
         let episodeTotal = this.postBangumi.episodeTotal;
         let hasZeroIndex = this.postBangumi.hasZeroIndex;
+        let thumb = this.postBangumi.thumb;
 
         let postBangumiInfo = {
           "bangumiName": bangumiName,
           "episodeTotal":episodeTotal,
-          "hasZeroIndex":hasZeroIndex
+          "hasZeroIndex":hasZeroIndex,
+          "thumb":thumb
         };
         let rd = (await API.sendPostBangumi(postBangumiInfo)).data;
         if (rd.code === 0) {
@@ -593,7 +637,28 @@
             }
           });
         }
-      }
+      },
+      cropUploadSuccess(res, field) {
+        console.log('-------- upload success --------');
+        console.log(res);
+        let link = res.data.link;
+        link = link.substring(link.lastIndexOf('/'));
+        console.log("link:",link);
+        console.log('field: ' + field);
+        // console.log('curImageUrl:', this.curImageUrl);
+        this.postBangumi.thumb = this.GLOBAL.imgURL+link;
+
+        setTimeout(()=>this.show = false,100);
+      },
+      cropSuccess(imgDataUrl, field) {
+        console.log('-------- crop success --------');
+
+      },
+      cropUploadFail(status, field) {
+        console.log('-------- upload fail --------');
+        console.log(status);
+        console.log('field: ' + field);
+      },
     },
     mounted() {
       //动画Fix 全屏问题

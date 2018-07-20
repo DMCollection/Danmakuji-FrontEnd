@@ -198,6 +198,18 @@ const getUserPostBangumi = data => {
   });
 };
 
+const updatePostBangumiThumb = data =>{
+  return axios.put(`${baseURL}/postBangumis/thumb`,data);
+};
+
+const deletePostBangumi = pbId => {
+  return axios.delete(`${baseURL}/postBangumis/${pbId}`);
+};
+
+const matchVideoSuccess = data => {
+  return axios.post(`${baseURL}/videos/matchSuccess`,data);
+};
+
 export default {
   login,
   logout,
@@ -223,5 +235,8 @@ export default {
   sendVideoMatchInfo,
   sendPostBangumi,
   getUserPostBangumi,
-  updatePostBangumi
+  updatePostBangumi,
+  updatePostBangumiThumb,
+  deletePostBangumi,
+  matchVideoSuccess
 };
