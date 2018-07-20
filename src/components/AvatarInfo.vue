@@ -12,7 +12,7 @@
       <div class="upload-container" style="margin-top:50px">
         <!-- <a style="display: block;font-size: 12px;color: #99a2aa;" class="btn" @click="toggleShow">设置头像</a> -->
         <el-button @click="toggleShow" type="primary">设置头像</el-button>
-        <my-upload field="file"
+        <my-upload field="image"
                    @crop-success="cropSuccess"
                    @crop-upload-success="cropUploadSuccess"
                    @crop-upload-fail="cropUploadFail"
@@ -20,7 +20,8 @@
                    :width="300"
                    :height="300"
                    :noSquare="true"
-                   url="http://10.0.46.20:8080/upload"
+                   :url="GLOBAL.uploadURL"
+                   :headers="GLOBAL.uploadHEADERS"
                    img-format="jpg"
         ></my-upload>
       </div>
@@ -66,14 +67,21 @@
        * [param] jsonData   服务器返回数据，已进行json转码
        * [param] field
        */
-      cropUploadSuccess(jsonData, field) {
+      cropUploadSuccess(res, field) {
         console.log('-------- upload success --------');
-        console.log(jsonData);
-        let imageUrl = jsonData.data.large;
-        this.imgDataUrl = imageUrl;
-        this.curImageUrl = imageUrl;
+        console.log(res);
+        // let imageUrl = jsonData.data.large;
+        // this.imgDataUrl = imageUrl;res
+        // this.curImageUrl = imageUrl;
+        let link = res.data.link;
+        link = link.substring(link.lastIndexOf('/'));
+        console.log("link:",link);
+        let imageUrl = link;
+        this.imgDataUrl = this.GLOBAL.imgURL+imageUrl;
+        this.curImageUrl = this.GLOBAL.imgURL+imageUrl;
         console.log('field: ' + field);
-        console.log('curImageUrl:', this.curImageUrl);
+        // console.log('curImageUrl:', this.curImageUrl);
+
         this.updateUserAvatar();
       },
       /**

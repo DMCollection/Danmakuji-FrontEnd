@@ -1,5 +1,5 @@
 <template>
-  <div class="pb-card-container">
+  <div class="pb-card-container" v-if="!isDelete">
     <div class="pb-thumb">
       <img :src="pbTemp.thumb?pbTemp.thumb:'/static/2.jpg'" alt="暂无封面">
     </div>
@@ -12,17 +12,19 @@
       </div>
       <div class="pb-status">
         状态:
-        <div :class="{pending:isPending,failed: isFailed,success: isSuccess,nperfect: isNotPerfect}"
+        <div :class="{pending:isPending,failed: isFailed,success: isSuccess,nperfect: isNotPerfect,auditing: isAuditing}"
              style="float: right;border-radius: 5px;width: 48px;height: 21px;">
           <span>{{pbTemp.pbs_name}}</span>
         </div>
       </div>
     </div>
-    <div class="pb-message" v-if="pbTemp.msg!==''">
-      修改建议:{{pbTemp.msg}}
-    </div>
-    <br>
+
+    <!--<br>-->
     <div class="pb-time-holder">
+      <div class="pb-message" v-if="pbTemp.msg!==''">
+        修改建议:{{pbTemp.msg}}
+      </div>
+      <br v-if="pbTemp.msg!==''">
       <div class="pb-time">
         创建时间: {{new Date(pbTemp.create_time).toLocaleString()}}
       </div>
@@ -31,13 +33,47 @@
         修改时间: {{new Date(pbTemp.modify_time).toLocaleString()}}
       </div>
     </div>
-    <div class="action-btn-group">
-      <el-row>
-        <el-button v-if="postBangumi.pbs === 'SUCCESS'" size="mini" class="show">设置为可见</el-button>
-        <el-button v-if="postBangumi.pbs === 'SUCCESS'" size="mini" class="thumb">设置封面</el-button>
-        <el-button v-if="postBangumi.pbs !== 'SUCCESS'" size="mini" class="edit" @click="dialogVisible=true">修改</el-button>
-        <el-button size="mini" class="delete">删除</el-button>
-      </el-row>
+    <div class="action-btn-group-container">
+      <!--<el-row>-->
+      <!--<el-button v-if="postBangumi.pbs === 'SUCCESS' || postBangumi.pbs === 'AUDITING'" size="mini" class="show">设置为可见</el-button>-->
+      <!--<el-button v-if="postBangumi.pbs === 'SUCCESS' || postBangumi.pbs === 'AUDITING'" size="mini" class="thumb" @click="toggleShow">设置封面</el-button>-->
+      <!--<el-button v-if="postBangumi.pbs !== 'SUCCESS' || postBangumi.pbs === 'AUDITING'" size="mini" class="edit" @click="dialogVisible=true">修改</el-button>-->
+      <!--<el-button size="mini" class="delete" @click="deletePostBangumi">删除</el-button>-->
+      <!--</el-row>-->
+      <el-dropdown >
+      <span class="el-dropdown-link">
+        <span style="color: #e4e4e6">操作</span><i class="el-icon-arrow-down el-icon--right" style="color: #8bc34a"></i>
+      </span>
+        <el-dropdown-menu slot="dropdown" >
+          <el-dropdown-item>
+            <div class="action-btn-group">
+              <el-button v-if="postBangumi.pbs === 'SUCCESS' || postBangumi.pbs === 'AUDITING'" size="mini"
+                         class="show">设置为可见
+              </el-button>
+            </div>
+          </el-dropdown-item>
+          <el-dropdown-item>
+            <div class="action-btn-group">
+            <el-button v-if="postBangumi.pbs === 'SUCCESS' || postBangumi.pbs === 'AUDITING'" size="mini" class="thumb"
+                       @click="toggleShow">设置封面
+            </el-button>
+            </div>
+          </el-dropdown-item>
+          <el-dropdown-item>
+            <div class="action-btn-group">
+            <el-button v-if="postBangumi.pbs !== 'SUCCESS' || postBangumi.pbs === 'AUDITING'" size="mini" class="edit"
+                       @click="dialogVisible=true">修改
+            </el-button>
+            </div>
+          </el-dropdown-item>
+          <el-dropdown-item>
+            <div class="action-btn-group">
+            <el-button size="mini" class="delete" @click="deletePostBangumi">删除</el-button>
+            </div>
+          </el-dropdown-item>
+
+        </el-dropdown-menu>
+      </el-dropdown>
     </div>
     <el-dialog title="修改番剧信息" :visible.sync="dialogVisible" width="550px">
       <el-form>
@@ -71,9 +107,16 @@
         <el-form-item label="总集数" label-width="120">
           <el-input type="text" v-model="pb.et" style="width: 80px;display: inherit;"></el-input>
         </el-form-item>
+        <el-form-item label="封面">
+          <input type="hidden" v-model="pb.thumb">
+          <el-button type="primary" size="mini" style="float: left;margin: 7px 0;border: none" @click="show=true">上传封面</el-button>
+        </el-form-item>
+        <el-form-item>
+          <img v-show="pb.thumb" :src="pb.thumb" alt="加载不出来呢" width="100%" style="border-radius: 5px;">
+        </el-form-item>
         <el-form-item style="margin-bottom: 0">
           <div class="explain-container">
-            <span><strong>* 若本次提交被收录后可按个人喜好设置该作封面 *</strong></span><br>
+            <span><strong>* 若本次提交被收录后封面仍可修改 *</strong></span><br>
           </div>
         </el-form-item>
       </el-form>
@@ -83,46 +126,76 @@
         <el-button type="primary" size="small" @click="updatePostBangumi" class="submit-btn">确 定</el-button>
       </div>
     </el-dialog>
+    <div class="upload-container" style="margin-top:50px">
+      <!-- <a style="display: block;font-size: 12px;color: #99a2aa;" class="btn" @click="toggleShow">设置头像</a> -->
+      <my-upload field="image"
+                 @crop-success="cropSuccess"
+                 @crop-upload-success="cropUploadSuccess"
+                 @crop-upload-fail="cropUploadFail"
+                 v-model="show"
+                 :width="620"
+                 :height="350"
+                 :noCircle="true"
+                 :url="GLOBAL.uploadURL"
+                 :headers="GLOBAL.uploadHEADERS"
+                 :langExt="langExtObj"
+                 img-format="jpg"
+      ></my-upload>
+    </div>
   </div>
 </template>
 
 <script>
   import API from "../api/api";
+  import 'babel-polyfill';
+  import myUpload from 'vue-image-crop-upload';
 
   export default {
     props: ["postBangumi"],
     name: "PostBangumiCard",
-    components:{
+    components: {
+      "my-upload": myUpload
     },
     data() {
       return {
-        dialogVisible:false,
+        dialogVisible: false,
         pb: {
           id: this.postBangumi.id,
           bn: this.postBangumi.bn,
           et: this.postBangumi.et,
-          hzi: this.postBangumi.hzi
+          hzi: this.postBangumi.hzi,
+          thumb:this.postBangumi.thumb
         },
-        pbTemp:this.postBangumi,
+        pbTemp: this.postBangumi,
+        show: false,
+        imgDataUrl: "",
+        curImageUrl: "",
+        isDelete: false,
+        langExtObj: {
+          preview: "封面预览"
+        }
       }
     },
     computed: {
       isPending() {
-        return this.postBangumi.pbs_name === "待处理";
+        return this.pbTemp.pbs_name === "待处理";
       },
       isSuccess() {
-        return this.postBangumi.pbs_name === "已采纳";
+        return this.pbTemp.pbs_name === "已采纳";
       },
       isNotPerfect() {
-        return this.postBangumi.pbs_name === "待完善";
+        return this.pbTemp.pbs_name === "待完善";
       },
       isFailed() {
-        return this.postBangumi.pbs_name === "未被采纳";
+        return this.pbTemp.pbs_name === "未被采纳";
       },
+      isAuditing() {
+        return this.pbTemp.pbs_name === "待审核";
+      }
     },
     methods: {
-      async updatePostBangumi(){
-        console.log("pb:",this.pb);
+      async updatePostBangumi() {
+        console.log("pb:", this.pb);
         let res = await API.updatePostBangumi(this.pb);
         let rd = res.data;
         if (rd.code === 0) {
@@ -130,11 +203,11 @@
             confirmButtonText: '确定',
             callback: action => {
               this.pbTemp = rd.data;
-              setTimeout(()=> this.dialogVisible = false,400);
+              setTimeout(() => this.dialogVisible = false, 400);
             }
           });
           // 如果该番剧已经存在了
-        } else if (rd.code===5003){
+        } else if (rd.code === 5003) {
           this.$alert(rd.msg, '提示', {
             confirmButtonText: '确定',
           });
@@ -146,6 +219,83 @@
             }
           });
         }
+      },
+      toggleShow() {
+        this.show = !this.show;
+      },
+      cropUploadSuccess(res, field) {
+        console.log('-------- upload success --------');
+        console.log(res);
+        let link = res.data.link;
+        link = link.substring(link.lastIndexOf('/'));
+        console.log("link:", link);
+        this.pbTemp.thumb = this.GLOBAL.imgURL + link;
+        this.pb.thumb = this.GLOBAL.imgURL + link;
+        console.log('field: ' + field);
+        // console.log('curImageUrl:', this.curImageUrl);
+
+        this.updatePostBangumiThumb();
+      },
+      cropSuccess(imgDataUrl, field) {
+        console.log('-------- crop success --------');
+
+      },
+      cropUploadFail(status, field) {
+        console.log('-------- upload fail --------');
+        console.log(status);
+        console.log('field: ' + field);
+      },
+      async updatePostBangumiThumb() {
+        let paramsData = {
+          id: this.pbTemp.id,
+          thumb: this.pbTemp.thumb
+        };
+        console.log("update post bangumi thumb : ", paramsData);
+        let res = await API.updatePostBangumiThumb(paramsData);
+        let rd = res.data;
+        if (rd.code === 0) {
+          this.pbTemp = rd.data;
+          setTimeout(() => this.show = false, 100);
+          this.$alert("修改封面需要审核，结果请留意系统通知", '封面提交成功', {
+            confirmButtonText: '确定',
+            callback: action => {
+              this.pbTemp = rd.data;
+            }
+          });
+        } else {
+          this.$message.error(rd.msg);
+        }
+      },
+      deletePostBangumi() {
+        this.$confirm('注意! 一旦删除将无法恢复, 本操作仅会删除个人记录, 已采纳的番剧信息将会保留', '确认删除', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(async () => {
+          let res = await (API.deletePostBangumi(this.pbTemp.id));
+          console.log("res:", res);
+          let rd = res.data;
+          if (rd.code === 0) {
+            this.isDelete = true;
+            this.$message.success("删除成功");
+          } else {
+            this.$message.error(rd.msg);
+          }
+        }).catch(() => {
+        });
+      }
+    },
+    async doDeletePostBangumi() {
+      let res = await (API.deletePostBangumi(this.pbTemp.id));
+      let rd = res.data;
+      if (rd.code === 0) {
+        this.isDelete = true;
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        });
+      } else {
+        this.$message.error(rd.msg);
       }
     },
     created() {
@@ -166,7 +316,7 @@
 
   .pb-thumb {
     height: 130px;
-    width: 80px;
+    width: 230px;
     display: inline-block;
     float: left;
   }
@@ -177,8 +327,8 @@
     min-width: 99%;
     width: 99%;
     overflow: hidden;
-    border-top-left-radius: 5px;
-    border-bottom-left-radius: 5px;
+    border-radius: 5px;
+    /*margin: 15px 15px 15px 15px;*/
   }
 
   .pb-name {
@@ -239,22 +389,31 @@
 
   .pb-message {
     float: left;
-    margin-left: 15px;
     color: cadetblue;
     height: 18px;
+    margin-bottom: 5px;
   }
 
-  .action-btn-group {
+  .action-btn-group-container {
     float: right;
     display: inline-block;
     margin-top: 25px;
     margin-right: 15px;
   }
 
+  .action-btn-group {
+
+  }
+
+  .el-dropdown-menu__item{
+    padding: 0 10px;
+  }
+
   .action-btn-group button {
     border: none;
     background-color: #264452;
     color: #e4e4e6;
+    width: 100%;
   }
 
   .action-btn-group button:hover {
@@ -292,19 +451,29 @@
   .failed {
     background-color: #9e0c0c;
   }
-  .el-message-box{
+
+  .auditing {
+    background-color: #f56c6c;
+  }
+
+  .el-message-box {
     border: none;
   }
 
-  .cancel-btn{
+  .cancel-btn {
     background-color: #e2e2e2;
-    border:none;
+    border: none;
   }
 
-  .cancel-btn:active{
+  .cancel-btn:active {
     background-color: #CBCBCB;
   }
-  .submit-btn{
+
+  .submit-btn {
+    border: none;
+  }
+
+  .el-message-box {
     border: none;
   }
 </style>
