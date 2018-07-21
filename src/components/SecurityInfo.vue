@@ -15,25 +15,25 @@
       </div>
     </div>
 
-    <div class="opera-wrapper">
-      <div id="edit-pwd" class="edit-pwd-wrapper">
+    <div class="opera-wrapper" >
+      <div id="edit-pwd" class="edit-pwd-wrapper" v-show="showPwdBox">
         <div class="opera-header">
           <h3 class="op-title">修改密码</h3>
         </div>
         <el-form ref="pwd-form" :model="pwd" :rules="pRules" size="small" label-position="top">
           <el-form-item prop="opwd" label="原密码">
-            <el-input v-model="pwd.opwd"></el-input>
+            <el-input v-model="pwd.opwd" type="password"></el-input>
           </el-form-item>
           <el-form-item prop="npwd" label="新密码">
-            <el-input v-model="pwd.npwd"></el-input>
+            <el-input v-model="pwd.npwd" type="password"></el-input>
           </el-form-item>
           <el-form-item prop="cpwd" label="确认新密码">
-            <el-input v-model="pwd.cpwd"></el-input>
+            <el-input v-model="pwd.cpwd" type="password"></el-input>
           </el-form-item>
-          <el-form-item>
-            <el-button>修改</el-button>
+          <el-form-item class="pwd-btn-group">
+            <el-button @click="updatePwd">修改</el-button>
             <el-button @click="resetForm('pwd-form')">重置</el-button>
-            <a style="color:#5757a5;margin-left:5px;vertical-align:-webkit-baseline-middle;"> 忘记密码？</a>
+            <a style="color:#5757a5;margin-left:5px;vertical-align:-webkit-baseline-middle;" @click="forgetPwd"> 忘记密码？</a>
           </el-form-item>
           <el-form-item>
             <p :style="epwdStyle">{{editPwdResult}}</p>
@@ -41,7 +41,7 @@
         </el-form>
       </div>
 
-      <div id="c-email" class="edit-email-wrapper">
+      <div id="c-email" class="edit-email-wrapper" v-show="showEmailBox">
         <div class="opera-header">
           <h3 class="op-title">更换邮箱</h3>
         </div>
@@ -50,7 +50,7 @@
             <el-input v-model="email.email" placeholder="新邮箱"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button>更换</el-button>
+            <el-button style="background-color: #3f51b5;color: #e4e4e6">更换</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -154,7 +154,7 @@
             console.log("getSecurityInfo success,", rd.data);
             this.securityInfo = rd.data;
             this.emailVerified = rd.data.emailVerified;
-            if (this.emailVerified == 1) {
+            if (this.emailVerified === 1) {
               this.emailOperaText = "更换邮箱";
             } else {
               this.emailOperaText = "验证邮箱";
@@ -166,9 +166,24 @@
           console.log("用户未登陆");
         }
       },
-      updatePwd() {
+      async updatePwd() {
+
+        let params = {
+          "opwd":this.pwd.opwd,
+          "cpwd":this.pwd.npwd
+        };
+        let res= await API.updateUserPwd(localStorage.getItem("USER_ID"), params);
+        let rd = res.data;
+        if (rd.code === 0) {
+          this.$message.success("密码修改成功!");
+          this.showPwdBox = false;
+        } else {
+          this.$message.error(rd.msg);
+        }
       },
       gotoPwd() {
+        this.showPwdBox = !this.showPwdBox;
+        this.showEmailBox = false;
         let anchor = document.getElementById("edit-pwd");
         if (anchor) {
           console.log("go pwd");
@@ -176,15 +191,19 @@
         }
       },
       gotoEmail() {
+        // this.showEmailBox = !this.showEmailBox;
+        this.showPwdBox = false;
         if (this.emailVerified === 1) {
           let anchor = document.getElementById("c-email");
           if (anchor) {
             console.log("go email");
             anchor.scrollIntoView();
+            this.showEmailBox = !this.showEmailBox;
           }
         } else {
           console.log("validate email addr!");
           this.validateEmailAddr();
+
         }
       },
       resetForm(formName) {
@@ -202,11 +221,21 @@
           this.disabled = false;
         }
       },
-      validateEmailAddr() {
+      async validateEmailAddr() {
         this.changeEmailTime = 60;
         this.disabled = true;
         console.log("invoke timer!");
         this.timer();
+        let res = await API.reVerifyEmail();
+        let rd = res.data;
+        if (rd.code === 0) {
+          this.$message.success("验证邮箱发送成功，请在20分钟内确认")
+        } else {
+          this.$message.error(rd.msg);
+        }
+      },
+      forgetPwd(){
+        this.$message.info("抱歉, 还没写");
       }
     },
     computed: {
@@ -314,6 +343,12 @@
   .s-item .opera a:hover {
     cursor: pointer;
     color: #00c0ff;
+  }
+
+  .pwd-btn-group button{
+    background-color: #3f51b5;
+    border: none;
+    color: #e4e4e6;
   }
 </style>
 

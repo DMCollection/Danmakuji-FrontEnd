@@ -5,12 +5,23 @@
                ref="udf">
         <el-form-item prop="nick">
           <span class="p-label">昵称：</span>
-          <el-input id="nick" style="width:200px;" name="nick" v-model="userInfo.nick"></el-input>
+          <el-input id="nick" style="width:200px;" name="nick" v-model="userInfo.nick" :disabled="true"></el-input>
         </el-form-item>
 
+        <!--<el-form-item prop="sex">-->
+          <!--<span class="p-label">性别：</span>-->
+          <!--<el-input id="sex" style="width:200px;" name="sex" v-model="userInfo.sex"></el-input>-->
+        <!--</el-form-item>-->
         <el-form-item prop="sex">
           <span class="p-label">性别：</span>
-          <el-input id="sex" style="width:200px;" name="sex" v-model="userInfo.sex"></el-input>
+          <el-select v-model="userInfo.sex" style="width: 200px" placeholder="请选择">
+            <el-option
+                    v-for="item in sex"
+                    :key="item.value"
+                    :label="item.value"
+                    :value="item.value">
+            </el-option>
+          </el-select>
         </el-form-item>
 
         <el-form-item prop="age">
@@ -36,7 +47,14 @@
   export default {
     data() {
       return {
-        userInfo: {}
+        userInfo: {},
+        sex:[{
+          value:"不明"
+        },{
+          value:"男"
+        },{
+          value:"女"
+        }],
       };
     },
     methods: {
@@ -60,7 +78,8 @@
         console.log("uid:", uid);
         let user = {
           sex: this.userInfo.sex,
-          age: this.userInfo.age
+          age: this.userInfo.age,
+          sign: this.userInfo.sign
         };
         console.log(user);
         if (user.sex && user.age !== '') {
@@ -71,8 +90,11 @@
             console.log("修改成功");
             this.userInfo.age = rd.data.age;
             this.userInfo.sex = rd.data.sex;
+            this.userInfo.sign = rd.data.sign;
+            this.$message.success("修改成功");
           } else {
             console.log(rd.msg);
+            this.$message.error(rd.msg);
           }
         }
       }
@@ -95,6 +117,14 @@
 
   .el-textarea{
     display: inherit;
+  }
+
+
+</style>
+<style>
+  .el-input.is-disabled .el-input__inner {
+    background-color: #262633 ;
+    border-color: #5e636f ;
   }
 </style>
 
