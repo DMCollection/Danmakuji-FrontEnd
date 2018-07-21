@@ -70,10 +70,13 @@
             </el-form-item>
             <el-form-item label="封面">
               <input type="hidden" v-model="postBangumi.thumb">
-              <el-button type="primary" size="mini" style="float: left;margin: 7px 0;border: none" @click="show=true">上传封面</el-button>
+              <el-button type="primary" size="mini" style="float: left;margin: 7px 0;border: none" @click="show=true">
+                上传封面
+              </el-button>
             </el-form-item>
             <el-form-item>
-              <img v-show="postBangumi.thumb" :src="postBangumi.thumb" alt="加载不出来呢" width="100%" style="border-radius: 5px;">
+              <img v-show="postBangumi.thumb" :src="postBangumi.thumb" alt="加载不出来呢" width="100%"
+                   style="border-radius: 5px;">
             </el-form-item>
             <el-form-item style="margin-bottom: 0">
               <div class="explain-container">
@@ -140,6 +143,11 @@
             匹配有误？重新选择
           </div>
         </div>
+        <div class="bangumi-info">
+          <i class="el-icon-view" title="访问量"></i> <span>{{viewCount}}</span>
+          <i class="el-icon-tickets" title="弹幕数" style="margin-left: 15px"></i> <span>{{danmakuCount}}</span>
+
+        </div>
       </div>
       <!--<div v-on:click="reSearchBangumi" class="re-choose">-->
       <!--匹配有误？重新选择-->
@@ -154,7 +162,7 @@
 
     <div v-show="episodeId!==''" class="cm-container">
       <comment v-on:updateRepliesAndPage="updateRepliesAndPage" :replies="replies" :episode_id="episodeId"
-               :page="page"></comment>
+               :page="page" :hot="hot"></comment>
     </div>
   </div>
 
@@ -187,11 +195,14 @@
         searchBangumisId: [],
         bangumiName: "",
         replyable: true,
-        videoId:"",
+        videoId: "",
+        viewCount: "",
+        danmakuCount: "",
         msgReplyId: "",
         msgEpId: "",
         list: [],
         replies: [],
+        hot: [],
         page: "",
         loading: false,
         states: [],
@@ -207,6 +218,7 @@
         hasSearch: false,
         dialogConfirmBangumiVisible: false,
         videoList: [],
+        expectVideo: '',
         // 是否有集数
         hasEpisode: false,
         postBangumiDialogVisible: false,
@@ -216,10 +228,10 @@
           hasZeroIndex: 0,
           thumb: ""
         },
-        langExtObj:{
-          preview:"封面预览"
+        langExtObj: {
+          preview: "封面预览"
         },
-        show:false,
+        show: false,
         playerOpts: {
           autoplay: true,
           theme: "#FADFA3",
@@ -230,7 +242,7 @@
           // logo: '/static/logo.png',
           volume: 0.7,
           mutex: true,
-          opacity:1,
+          opacity: 1,
 
           video: {
             url: this.videoURL,
@@ -275,7 +287,7 @@
       "d-player": VueDPlayer,
       "post-reply": PostReply,
       "comment": Comment,
-      "myUpload":myUpload
+      "myUpload": myUpload
     },
     watch: {
       searchBangumisId(val) {
@@ -372,9 +384,14 @@
         });
       },
       reSearchBangumi() {
-        this.hasInfo = false;
-        this.isMatch = false;
-        this.activeNames = ["2"];
+
+        if (this.expectVideo !== '' && this.videoList.length !== 0) {
+          this.dialogConfirmBangumiVisible = true;
+        } else {
+          this.hasInfo = false;
+          this.isMatch = false;
+          this.activeNames = ["2"];
+        }
       },
       async handleChange(file) {
         this.videoURL = file.url;
@@ -400,29 +417,77 @@
         this.tap("结束寻找弹幕资源");
         this.tap("episode data :" + resData);
 
-        let videosInfos = resData.data;
+        let videosInfos = resData.data.videoInfos;
+        let expectVideo = resData.data.ev;
         if (resData.code === "0" || resData.msg === "OK") {
           console.log("videoInfo: ", videosInfos);
+          console.log("expectVideo", expectVideo);
 
-          // 如果识别的结果不唯一
-          if (videosInfos.length > 1) {
-            this.dialogConfirmBangumiVisible = true;
+          // 如果没有已经确定了的
+          if (typeof expectVideo === 'undefined') {
+            console.log("expectVideo instanceof 'undefined'");
+            // 如果识别的结果不唯一
+
+            if (typeof videosInfos === 'undefined') {
+              this.hasInfo = false;
+              this.isMatch = false;
+            }
+
+            if (videosInfos.length > 1) {
+              this.dialogConfirmBangumiVisible = true;
+              this.videoList = videosInfos;
+            }
+            if (videosInfos.length === 1) {
+              this.isMatch = true;
+              this.hasInfo = true;
+              let videosInfo = videosInfos[0];
+              //成功
+              let danmakuId = videosInfo.danmakuId;
+              //刷新并装填弹幕
+              this.tap("有弹幕, videoURL:" + this.videoURL);
+              this.switchVideo(this.videoURL, danmakuId);
+              this.bangumiName = videosInfo.bangumiName;
+              this.episodeIndex = videosInfo.episodeIndex;
+              this.episodeId = videosInfo.episodeId;
+              this.viewCount = videosInfo.viewCount;
+              this.danmakuCount = videosInfo.danmakuCount;
+              this.tap("setEpId in:" + videosInfo.episodeId);
+              this.initComments();
+              this.tap("bangumiName:" + this.bangumiName);
+              this.tap("episodeIndex:" + this.episodeIndex);
+              setTimeout(() => {
+                this.$notify({
+                  title: '识别成功',
+                  message: this.bangumiName + ' ' + this.episodeIndex,
+                  type: 'success'
+                });
+              }, 800)
+            } else {
+              this.tap("没有弹幕，直接播放, videoURL:" + this.videoURL);
+              this.switchVideo(this.videoURL, "");
+              this.playerOpts.autoplay = false;
+              this.hasInfo = false;
+              this.activeNames = ["2"];
+              this.bangumiName = "";
+              this.episodeIndex = "";
+              this.episodeId = "";
+              this.viewCount = "";
+              this.replies = [];
+              this.danmakuCount = "";
+            }
+          } else {
+            // 如果有expectVideo就直接加载这一个
             this.videoList = videosInfos;
-          }
-
-          if (videosInfos.length === 1) {
+            this.expectVideo = expectVideo;
             this.isMatch = true;
             this.hasInfo = true;
-            let videosInfo = videosInfos[0];
-            //成功
-            let danmakuId = videosInfo.danmakuId;
-            //刷新并装填弹幕
-            this.tap("有弹幕, videoURL:" + this.videoURL);
-            this.switchVideo(this.videoURL, danmakuId);
-            this.bangumiName = videosInfo.bangumiName;
-            this.episodeIndex = videosInfo.episodeIndex;
-            this.episodeId = videosInfo.episodeId;
-            this.tap("setEpId in:" + videosInfo.episodeId);
+            this.switchVideo(this.videoURL, expectVideo.danmakuId);
+            this.bangumiName = expectVideo.bangumiName;
+            this.episodeIndex = expectVideo.episodeIndex;
+            this.episodeId = expectVideo.episodeId;
+            this.viewCount = expectVideo.viewCount;
+            this.danmakuCount = videosInfo.danmakuCount;
+            this.tap("setEpId in:" + expectVideo.episodeId);
             this.initComments();
             this.tap("bangumiName:" + this.bangumiName);
             this.tap("episodeIndex:" + this.episodeIndex);
@@ -435,15 +500,19 @@
             }, 800)
           }
         } else {
-          this.tap("没有弹幕，直接播放, videoURL:" + this.videoURL);
           this.switchVideo(this.videoURL, "");
+          this.playerOpts.autoplay = false;
           this.hasInfo = false;
           this.activeNames = ["2"];
           this.bangumiName = "";
           this.episodeIndex = "";
           this.episodeId = "";
           this.replies = [];
+          this.viewCount = "";
+          this.danmakuCount = "";
         }
+
+
       },
       switchVideo(videoURL, danmakuId) {
         this.tap("switch video invoked!");
@@ -500,6 +569,7 @@
           this.tap(repliesData.data.page);
           this.replies = repliesData.data.replies;
           this.page = repliesData.data.page;
+          this.hot = repliesData.data.hot;
         }
       },
       async initEpisodeInfo(epId) {
@@ -510,6 +580,12 @@
           console.log("episode:", rd);
           this.bangumiName = rd.data.bangumiName;
           this.episodeIndex = rd.data.episodeIndex;
+
+          const player = this.$refs.player.dp;
+          console.log("player", player);
+          player.video.pic = rd.data.thumb;
+          player.video.poster = rd.data.thumb;
+          this.activeNames = ["2"];
         }
         else {
           console.log('load Episode by id failled! ', rd.msg);
@@ -571,9 +647,9 @@
         this.videoId = videosInfo.videoId;
         this.sendMatchSuccessVideoInfo();
       },
-      async sendMatchSuccessVideoInfo(){
+      async sendMatchSuccessVideoInfo() {
         let matchSuccessData = {
-          v:this.videoId
+          v: this.videoId
         };
         let res = await API.matchVideoSuccess(matchSuccessData);
         let rd = res.data;
@@ -595,6 +671,8 @@
       },
       haventResultBtn() {
         this.dialogConfirmBangumiVisible = false;
+        this.hasInfo = false;
+        this.isMatch = false;
       },
       async sendPostBangumiInfo() {
         let bangumiName = this.postBangumi.bangumiName;
@@ -604,9 +682,9 @@
 
         let postBangumiInfo = {
           "bangumiName": bangumiName,
-          "episodeTotal":episodeTotal,
-          "hasZeroIndex":hasZeroIndex,
-          "thumb":thumb
+          "episodeTotal": episodeTotal,
+          "hasZeroIndex": hasZeroIndex,
+          "thumb": thumb
         };
         let rd = (await API.sendPostBangumi(postBangumiInfo)).data;
         if (rd.code === 0) {
@@ -616,11 +694,11 @@
               this.postBangumi.bangumiName = "";
               this.postBangumi.episodeTotal = "";
               this.postBangumi.hasZeroIndex = 0;
-              setTimeout(()=> this.postBangumiDialogVisible = false,400);
+              setTimeout(() => this.postBangumiDialogVisible = false, 400);
             }
           });
           // 如果该番剧已经存在了
-        } else if (rd.code===5003){
+        } else if (rd.code === 5003) {
           this.$alert(rd.msg, '提示', {
             confirmButtonText: '确定',
             callback: action => {
@@ -643,12 +721,12 @@
         console.log(res);
         let link = res.data.link;
         link = link.substring(link.lastIndexOf('/'));
-        console.log("link:",link);
+        console.log("link:", link);
         console.log('field: ' + field);
         // console.log('curImageUrl:', this.curImageUrl);
-        this.postBangumi.thumb = this.GLOBAL.imgURL+link;
+        this.postBangumi.thumb = this.GLOBAL.imgURL + link;
 
-        setTimeout(()=>this.show = false,100);
+        setTimeout(() => this.show = false, 100);
       },
       cropSuccess(imgDataUrl, field) {
         console.log('-------- crop success --------');
@@ -659,7 +737,8 @@
         console.log(status);
         console.log('field: ' + field);
       },
-    },
+    }
+    ,
     mounted() {
       //动画Fix 全屏问题
 
@@ -682,7 +761,8 @@
           this.goAnchor("r-" + this.msgReplyId);
         }, 1000);
       }
-    },
+    }
+    ,
     created() {
       console.log("watch video created!");
       let epid = this.$route.params.epid;
@@ -704,7 +784,8 @@
         }
       }
     }
-  };
+  }
+  ;
 </script>
 
 <style>
@@ -714,7 +795,7 @@
 
   .playerWrapper {
     width: 50%;
-    margin: 0 auto;
+    margin: 60px auto 0;
     border-radius: 5px;
     box-shadow: 0px 4px 20px 5px #00000036, 0px 4px 12px 0px #0000009c;
   }
@@ -791,7 +872,7 @@
   .bangumi-name-container {
     width: 100%;
     display: inline-block;
-    margin: 0 auto 15px;
+    margin: 0 auto;
   }
 
   .re-choose {
@@ -810,7 +891,7 @@
     background-color: #f36392;
     border: 1px solid #f36392;
     margin-bottom: 10px;
-    margin-top: 12px;
+    margin-top: 20px;
     float: right;
     border-radius: 4px;
     color: #fff;
@@ -908,22 +989,33 @@
     float: left;
   }
 
-  .explain-container{
+  .explain-container {
     float: left;
     line-height: 20px;
   }
 
-  .el-message-box{
+  .el-message-box {
     background-color: #b1b1b1;
   }
-  .el-message-box__content{
+
+  .el-message-box__content {
     color: black;
   }
 
-  .el-textarea__inner{
+  .el-textarea__inner {
     background-color: #262633;
     color: #eeeeee;
     border-color: #5e636f;
+  }
+
+  .bangumi-info {
+    text-align: left;
+    color: #aaaaaa;
+    font-size: 15px;
+  }
+
+  .bangumi-info span {
+    margin-left: 8px;
   }
 
   @keyframes ShowVideo {

@@ -81,6 +81,10 @@ const updateUserInfo = (uid, user) => {
   return axios.put(`${baseURL}/users/${uid}`, user);
 };
 
+const updateUserPwd = (uid, user) => {
+  return axios.put(`${baseURL}/users/${uid}/pwd`, user);
+};
+
 const getVideosInfo = (fileSize, vMd5) => {
   return axios.get(`${baseURL}/videos/${fileSize}/${vMd5}`);
 };
@@ -102,6 +106,10 @@ const getsearchBangumisIdResult = query => {
 
 const getEpisodeInfoByEpId = epId => {
   return axios.get(`${baseURL}/episodes/${epId}`);
+};
+
+const reVerifyEmail = ()=> {
+  return axios.get(`${baseURL}/auth/emailReVerify`);
 };
 
 //评论API-------------------------------
@@ -210,6 +218,7 @@ const matchVideoSuccess = data => {
   return axios.post(`${baseURL}/videos/matchSuccess`,data);
 };
 
+
 export default {
   login,
   logout,
@@ -238,5 +247,7 @@ export default {
   updatePostBangumi,
   updatePostBangumiThumb,
   deletePostBangumi,
-  matchVideoSuccess
+  matchVideoSuccess,
+  reVerifyEmail,
+  updateUserPwd
 };

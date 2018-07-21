@@ -72,7 +72,8 @@
                               <div class="i_menu i_menu_login">
                                 <p class="tip">登录后你可以：</p> 
                                 <div class="img">
-                                <img src="/static/sk.jpg">
+                                <!--<img src="/static/sk.jpg">-->
+                                <img src="/static/sticker.webp">
                                 </div>
                             </div>
                             <el-button style="width:320px" @click="$router.push({path:'/login'})" type="primary">
@@ -85,7 +86,7 @@
                 </el-dropdown-menu>
             </el-dropdown>
   
-            <el-dropdown class="message-container" placement="bottom">
+            <el-dropdown class="message-container" placement="bottom" v-if="isLogin">
                 <div>
                   <el-badge v-if="unreadMsg>0" :value="unreadMsg" :max="99" class="item">
                     <!-- <a class="message-pos" href="#">消息</a> -->
@@ -221,7 +222,7 @@ export default {
         password: this.passwordInput,
         remember_me: this.rememberMe ? 1 : 0
       };
-      if (loginInfo.principal == "" || loginInfo.password == "") {
+      if (loginInfo.principal === "" || loginInfo.password === "") {
         this.$message({
           message: "账号或密码为空",
           type: "info"
@@ -288,7 +289,11 @@ export default {
         localStorage.setItem("USER_ID", "");
       }
       this.isLogin = false;
-      localStorage.clear();
+      // localStorage.clear();
+      localStorage.removeItem("USER_ID");
+      localStorage.removeItem("JWT_TOKEN");
+      localStorage.removeItem("loginUserName");
+      localStorage.removeItem("face");
       window.location.href = "/";
     },
     getCurUserFace() {
@@ -351,7 +356,7 @@ export default {
       let USER_ID = localStorage.getItem("USER_ID");
       this.tap("check userid: " + USER_ID);
 
-      if (JWT_TOKEN == null || JWT_TOKEN == "") {
+      if (JWT_TOKEN == null || JWT_TOKEN === "") {
         return;
       }
       //检查Token是否过期
