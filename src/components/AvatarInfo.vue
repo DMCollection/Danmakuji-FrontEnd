@@ -1,13 +1,10 @@
 <template>
   <el-container>
     <el-main>
-      <!-- <el-row :gutter="50"> -->
-
-      <!-- <el-col :span="20"> -->
       <div class="cur-avatar">
         <span style="display: block;font-size: 12px;color: #99a2aa;padding-bottom:15px;">当前头像</span>
         <img style="width:100%; height:100%; border-radius: 50%;"
-             :src="curImageUrl?curImageUrl:'/static/defaultface.png'"/>
+             :src="curImageUrl?curImageUrl:'/static/akari.jpg'"/>
       </div>
       <div class="upload-container" style="margin-top:50px">
         <!-- <a style="display: block;font-size: 12px;color: #99a2aa;" class="btn" @click="toggleShow">设置头像</a> -->
@@ -25,8 +22,6 @@
                    img-format="jpg"
         ></my-upload>
       </div>
-      <!-- </el-col>
-     </el-row>   -->
     </el-main>
   </el-container>
 </template>

@@ -37,8 +37,7 @@
                         </el-form-item>
                         <span class="clearfix"></span>
                         </div>
-                    
-                       
+
                         <div class="area-tool">
                         <a @click="login" class="do login-btn primary">登陆</a>
                         <div id="launchBtn" class="launchBtn bg hidden">
@@ -276,18 +275,6 @@ a {
 .area {
     position: relative;
 }
-/* #area-reg .r .area-reg .form .area .inp-icon.icon-mobile {
-    left: 10px;
-    top: 11px;
-    font-size: 22px;
-}
-#area-reg .r .area-reg .form .area .inp-icon {
-    position: absolute;
-    left: 13px;
-    top: 14px;
-    color: #d9d9d9;
-    font-size: 16px;
-} */
 .icon-mobile-phone:before, .icon-mobile:before {
     content: "\f10b";
 }
@@ -305,10 +292,6 @@ a {
     font-size: 14px;
     border: 1px solid rgb(180, 179, 179);
 }
-/* input.error, textarea.error {
-    border-color: #c00 !important;
-    color: #c33 !important;
-} */
 .clearfix {
     display: inline-block;
     margin: 0;
@@ -337,21 +320,6 @@ a {
     padding-left: 10px;
     margin-right: 0;
 }
-/* #area-reg .r .area-reg .form .area input#send-mobile-code.dis {
-    background: #eee;
-    color: #c2c2c2;
-}
-#area-reg .r .area-reg .form .area input#send-mobile-code {
-    margin-right: 0;
-    margin-left: 18px;
-    padding-left: 0;
-    width: 165px;
-    float: left;
-    text-align: center;
-    border-radius: 5px;
-    color: #868686;
-    cursor: pointer;
-} */
 #area-reg .r .area-reg .form .area-agree {
     color: #777;
     font-size: 12px;

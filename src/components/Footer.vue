@@ -1,7 +1,7 @@
 <template>
     <div class="f-container">
-        <p class="site-footer__copyright">© 2018 Darker. &nbsp;Power By
-            <img class="heart" src="/static/love.png"/> in Earth.
+        <p class="site-footer__copyright">© {{new Date().getFullYear()}} Darker. &nbsp;Power By
+            <img class="heart" src="/static/love.png"/>
             </p>
     </div>
 </template>

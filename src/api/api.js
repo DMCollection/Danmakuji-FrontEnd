@@ -196,18 +196,18 @@ const sendPostBangumi = data => {
   return axios.post(`${baseURL}/postBangumis`, data);
 };
 
-const updatePostBangumi =data=>{
-  return axios.put(`${baseURL}/postBangumis`,data);
+const updatePostBangumi = data => {
+  return axios.put(`${baseURL}/postBangumis`, data);
 };
 
 const getUserPostBangumi = data => {
-  return axios.get(`${baseURL}/postBangumis`,{
+  return axios.get(`${baseURL}/postBangumis`, {
     params: data
   });
 };
 
-const updatePostBangumiThumb = data =>{
-  return axios.put(`${baseURL}/postBangumis/thumb`,data);
+const updatePostBangumiThumb = data => {
+  return axios.put(`${baseURL}/postBangumis/thumb`, data);
 };
 
 const deletePostBangumi = pbId => {
@@ -215,9 +215,38 @@ const deletePostBangumi = pbId => {
 };
 
 const matchVideoSuccess = data => {
-  return axios.post(`${baseURL}/videos/matchSuccess`,data);
+  return axios.post(`${baseURL}/videos/matchSuccess`, data);
 };
 
+const getEpisodesByBid = bid => {
+  return axios.get(`${baseURL}/episodes/bid/${bid}`);
+};
+
+const getBangumiById = bid => {
+  return axios.get(`${baseURL}/bangumis/${bid}`);
+};
+
+const getMostViewBangumis = () => {
+  return axios.get(`${baseURL}/bangumis/mostView`);
+};
+
+const searchBangumisByName = (name, pn, ps) => {
+  return axios.get(`${baseURL}/bangumis`,{
+    params: {
+      bangumiName: name,
+      pageNum: pn,
+      pageSize: ps
+    }
+  })
+};
+
+const getNotice = () => {
+  return axios.get(`${baseURL}/notices/showIndex`);
+};
+
+const getNoticeById = id => {
+  return axios.get(`${baseURL}/notices/${id}`);
+};
 
 export default {
   login,
@@ -249,5 +278,11 @@ export default {
   deletePostBangumi,
   matchVideoSuccess,
   reVerifyEmail,
-  updateUserPwd
+  updateUserPwd,
+  getEpisodesByBid,
+  getMostViewBangumis,
+  getBangumiById,
+  searchBangumisByName,
+  getNotice,
+  getNoticeById
 };

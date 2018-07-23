@@ -21,13 +21,6 @@
                 </div>
                 <span class="time-text">{{new Date(notice.modify_time).toLocaleString()}}</span>
               </div>
-              <!-- <div class="nick-time">
-                  <span class="nick-text">{{notice.publisher.nick}}</span>
-                  <span class="time-text">{{new Date(notice.modify_time).toLocaleString()}}</span>
-              </div>
-              <div class="reply-ctx">
-                  <a :href="'#/video/'+notice.ep_id+'?rid='+notice.reply_id" target="_blank" class="reply-text">{{notice.content}}</a>
-              </div> -->
             </div>
           </div>
         </div>

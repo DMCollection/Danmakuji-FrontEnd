@@ -17,6 +17,8 @@ import LikeNotice from "../components/LikeNotice.vue";
 import EmailVerify from "../components/EmailVerify.vue";
 import UserProfile from "../components/UserProfile.vue";
 import PostBangumi from "../components/PostBangumi.vue";
+import BangumiDetail from "../components/BangumiDetail.vue";
+import Announce from "../components/Announce.vue";
 Vue.use(VueRouter);
 
 const routes = [
@@ -24,12 +26,11 @@ const routes = [
   { path: "/video", name: "video", component: WatchVideo },
   { path: "/register", name: "register", component: Register },
   { path: "/login", name: "login", component: Login },
-  { path: "/video/:epid", name: "video", component: WatchVideo },
+  { path: "/video/:epid", name: "videor", component: WatchVideo },
   { path: "/vemail", name: "vemail", component: EmailVerify },
   { path: "/user/:uid", name: "user", component: UserProfile },
-
-  // { path: "/space", name: "space", component: PersonalStation},
-  // { path: "/space/avatar",name: "avatar",component: AvatarInfo},
+  { path: "/bdtl/:bid", name: "bangumidetail", component: BangumiDetail },
+  { path: "/announce/:id", name: "announce", component: Announce },
   {
     path: "/space",
     component: PersonalStation,
@@ -38,8 +39,7 @@ const routes = [
       { path: "avatar", component: AvatarInfo, name: "avatar" },
       { path: "personal", component: Personal, name: "personal" },
       { path: "security", component: Security, name: "security" },
-      { path: "postBangumi", component: PostBangumi, name:"postBangumi"}
-      // { path: 'personalInfo', component: PersonalInfo, name: '个人信息' }
+      { path: "postBangumi", component: PostBangumi, name: "postBangumi" }
     ]
   },
   {

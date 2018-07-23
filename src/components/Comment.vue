@@ -23,16 +23,30 @@
         <div v-show="replies.length>0" class="comment-list">
             <!--热门评论-->
           <div v-if="page.pageNumber === 1">
-            <root-reply v-for="(reply,index) in hot" :reply_total="replies.length" :index="index" :replies="hot"
-                        :reply="reply" :key="reply.reply.reply.replyId+reply.reply.reply.rLike" :episode_id="episode_id"></root-reply>
+            <root-reply v-for="(reply,index) in hot"
+                        :reply_total="replies.length"
+                        :index="index"
+                        :replies="hot"
+                        :reply="reply"
+                        :key="reply.reply.reply.replyId+reply.reply.reply.rLike"
+                        :episode_id="episode_id"
+            >
 
-            <div class="hot-line">
+            </root-reply>
+
+            <div v-if="hot.length>0" class="hot-line">
               <span @click="readMoreHot">以上为热门评论，<a class="more-hot">查看更多</a></span>
             </div>
           </div>
 
-          <root-reply v-for="(reply,index) in replies" :reply_total="replies.length" :index="index" :replies="replies"
-                      :reply="reply" :key="reply.reply.reply.replyId" :episode_id="episode_id"></root-reply>
+          <root-reply v-for="(reply,index) in replies"
+                      :reply_total="replies.length"
+                      :index="index"
+                      :replies="replies"
+                      :reply="reply"
+                      :key="reply.reply.reply.replyId"
+                      :episode_id="episode_id">
+          </root-reply>
         </div>
         <div class="bottom-page paging-box-big">
           <el-pagination v-if="page.parentTotalSize>20"
@@ -72,14 +86,11 @@
       async refreshComment() {
         console.log("refresh comments");
         this.refreshLoading = true;
-        let res = await this.loadData(this.episode_id, this.page.pageNumber);
+        let res = await API.getRepliesByEpIdAndPageNum(this.episode_id, this.page.pageNumber);
         let rd = res.data;
         if (rd.code === 0) {
-          this.replies = rd.replies;
-          this.page = rd.page;
-          if (typeof rd.hot !== 'undefined') {
-            this.hot = rd.hot;
-          }
+          console.log("refreshComm:",rd);
+          this.$emit("refreshComm",rd);
         }
         this.refreshLoading = false;
       },
@@ -100,26 +111,25 @@
       },
 
       async targetPage(val) {
-        let resData = await this.loadData(this.episode_id, val);
-        let pageInfo = resData.data.page;
-        let replies = resData.data.replies;
-        this.$emit("updateRepliesAndPage", replies, pageInfo);
-        this.tap("targetPage invoked!");
+        let res = await API.getRepliesByEpIdAndPageNum(this.episode_id, val);
+        let rd = res.data;
+        if(rd.code ===0){
+          let pageInfo = rd.data.page;
+          let replies = rd.data.replies;
+          this.$emit("updateRepliesAndPage", replies, pageInfo);
+          this.tap("targetPage invoked!");
+        }
+        else {
+          console.log("err...");
+        }
       },
-
+      deleteReply(index){
+        console.log("del root reply,index:",index);
+        this.replies.splice(index,1);
+      },
       readMoreHot(){
         this.$message.info("先不写了,好累");
       },
-
-
-      // async handleSizeChange(val){
-      //     this.tap("pageSize:"+val);
-      //     let resData = (await this.loadData(this.episode_id, this.page.pageNumber, val));
-      //     let pageInfo = resData.data.page;
-      //     let replies = resData.data.replies;
-      //     this.$emit("updateRepliesAndPage",replies,pageInfo);
-      //     this.tap("targetPage invoked!");
-      // }
     },
     mounted() {
       console.log("comment.vue mounted!");
@@ -242,19 +252,6 @@
     font-size: 12px;
   }
 
-  /* .paging-box .result {
-      padding-right: 10px;
-  }
-  .paging-box .disabled {
-      display: none;
-  }
-  .paging-box current {
-      color: #00a1d6;
-      font-weight: 700;
-  }
-  .paging-box .dian {
-      cursor: default;
-  } */
   .bb-comment .comment-list {
     padding-top: 20px;
   }
@@ -269,7 +266,7 @@
 
   .bb-comment .hot-line{
     text-align: center;
-    border-bottom: 1px solid #e5e9ef;
+    border-bottom: 1px solid #e0e3e84f;
     position: relative;
     margin: 40px 0 40px 85px;
     font-size: 12px

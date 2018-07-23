@@ -5,12 +5,6 @@ import App from "./App.vue";
 import router from "./routes/router.js";
 import global from "./global/global";
 
-// import axios from 'axios'
-
-// Vue.prototype.$axios = axios.create({
-//     baseURL: '/api/'
-// })
-
 Vue.config.productionTip = false;
 Vue.use(ElementUI);
 Vue.prototype.tap = function(x) {

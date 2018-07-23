@@ -5,21 +5,6 @@
       <div class="msg-icon"></div>
       <div class="msg-station">消息中心</div>
     <el-menu style="background-color:#262633;border:0" :default-active="pactiveIndex">
-        <!-- <ul class="nav-list">
-            <li class="nl-item" @click="changeMsgTypeTitle('系统通知')">
-                <router-link :to="{name:'snotice'}">
-                    系统通知
-        </router-link>
-            </li>
-            <li class="nl-item" @click="changeMsgTypeTitle('回复我的')">
-                 <router-link :to="{name:'rnotice'}">回复我的
-        </router-link>
-            </li>
-            <li class="nl-item" @click="changeMsgTypeTitle('@我的')">
-                <router-link :to="{name:'anotice'}">@我的
-                </router-link>  
-            </li>
-        </ul> -->
         <router-link :to="{name:'snotice'}">
             <el-menu-item @click="changeMsgTypeTitle('系统通知')" class="nav-item" index="1">系统通知</el-menu-item>
         </router-link>
@@ -115,33 +100,5 @@ export default {
     color: #149299;
     width: 100px;
 }
-/* .msg-icon {
-    width: 14px;
-    height: 16px;
-    margin-right: 10px;
-    background: url(data:image/svg+xml;charset=utf-8,%3Csvg width='16' height='12' viewBox='0 0…0 0 .322.151l1.429-1.112z' fill='%23333' fill-rule='evenodd'/%3E%3C/svg%3E) 50%/contain no-repeat;
-} */
-/* .nl-item{
-    height: 40px;
-    position: relative;
-    color: #149287;;
-}
-.nav-list li:before {
-    content: "\25CF";
-    line-height: 20px;
-}
-.nl-item:before {
-    width: 10px;
-    height: 20px;
-    text-align: center;
-}
-.nl-item a{
-    padding-left: 10px;
-    line-height: 40px;
-    -webkit-box-flex: 1;
-    -ms-flex: 1;
-    flex: 1;
-    text-decoration: none;
-} */
 </style>
 
