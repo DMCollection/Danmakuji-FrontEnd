@@ -165,7 +165,10 @@ export default {
   },
   created(){
     console.log("helloworld.vue created!");
-    this.lastNoticeId = localStorage.getItem("lastNoticeId");
+    let lt = localStorage.getItem("lastNoticeId");
+    if(lt){
+      this.lastNoticeId = parseInt(lt);
+    }
     this.initBangumis();
     this.getNotice();
   }
