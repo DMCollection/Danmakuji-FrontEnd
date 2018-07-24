@@ -9,7 +9,7 @@
             <div class="sys-content">
               <div class="ctx-head">
                 <span class="title-text">{{notice.title}}</span>
-                <span class="time-text">{{new Date(notice.modify_time).toLocaleString()}}</span>
+                <span class="time-text">{{getDateDiff(notice.modify_time)}}</span>
               </div>
               <div class="ctx-body">
                 <span>{{notice.content}}</span>
@@ -29,6 +29,7 @@
 <script>
   import infiniteScroll from "vue-infinite-scroll";
   import API from "../api/api";
+  import {formatDate} from "../global/time";
 
   export default {
     data() {
@@ -42,6 +43,27 @@
       infiniteScroll
     },
     methods: {
+      getDateDiff(time){
+        let minute = 1000 * 60;
+        let hour = minute * 60;
+        let day = hour * 24;
+        let now = new Date().getTime();
+        let diffValue = now - time;
+        if(diffValue < 0){return;}
+        let dayC =diffValue/day;
+        let hourC =diffValue/hour;
+        let minC =diffValue/minute;
+        if(dayC>=1){
+          return formatDate(new Date(time),"yyyy-MM-dd hh:mm")
+        }
+        else if(hourC>=1){
+          return ""+ parseInt(hourC) +"小时前";
+        }
+        else if(minC>=1){
+          return ""+ parseInt(minC) +"分钟前";
+        }else
+          return "刚刚";
+      },
       async initSysNotices() {
         let uid = localStorage.getItem("USER_ID");
         console.log("init sysNotices!!!");
@@ -94,6 +116,7 @@
     height: 100%;
     width: 100%;
     margin: 0 auto;
+    animation: ShowVideo 0.4s;
   }
 
   .sys-content .ctx-head {
@@ -115,7 +138,7 @@
   }
 
   .ctx-body {
-    color: #0097d0;
+    color: #dfe9ec;
     font-size: 14px;
   }
 

@@ -10,7 +10,7 @@
                 <div class="block r">
                     <div class="area-reg">
                         <el-form id="form-reg" class="form" status-icon ref="reg">
-                        <h3 class="title">登陆 Darker</h3>
+                        <h3 class="title">登入 Darker</h3>
                         <div class="area">
                         <el-form-item>
                             <el-input id="ipt-username-reg" name="name" v-model="loginData.principal" type="text" auto-complete="off" class="regname name l error" placeholder="昵称/邮箱" required="required"></el-input>
@@ -20,7 +20,7 @@
                         
                         <div class="area">
                         <el-form-item >
-                            <el-input id="ipt-pwd-reg" name="password" v-model="loginData.password" type="password" auto-complete="off" placeholder="请输入密码，6-20位" class="password l error" required="required"></el-input>
+                            <el-input id="ipt-pwd-reg" @keyup.enter.native="login" name="password" v-model="loginData.password" type="password" auto-complete="off" placeholder="请输入密码，6-20位" class="password l error" required="required"></el-input>
                         </el-form-item>  
                         <span class="clearfix"></span>
                         </div>
@@ -39,7 +39,7 @@
                         </div>
 
                         <div class="area-tool">
-                        <a @click="login" class="do login-btn primary">登陆</a>
+                        <a @click="login" class="do login-btn primary">登入</a>
                         <div id="launchBtn" class="launchBtn bg hidden">
                         </div>
                         <p></p>
@@ -121,6 +121,7 @@ export default {
         localStorage.setItem("JWT_TOKEN", token);
         localStorage.setItem("loginUserName", loginUserName);
         localStorage.setItem("face",rd.data.user.face);
+        localStorage.setItem("ROLE",rd.data.user.role);
         window.location.href = "/"
       }
     },

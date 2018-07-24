@@ -277,7 +277,7 @@
 <style scoped>
   .security-container {
     margin: 20px;
-    /* text-align: center; */
+    animation: ShowVideo 0.4s;
   }
 
   .opera-wrapper {

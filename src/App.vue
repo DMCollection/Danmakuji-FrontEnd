@@ -49,7 +49,7 @@
                                 </div>
                             </div>
                             <el-button style="width:320px" @click="$router.push({path:'/login'})" type="primary">
-                              登陆
+                              登入
                             </el-button> 
                             <p class="reg">首次使用？<a href="#/register">点我去注册</a></p>
                             </div>
@@ -338,6 +338,7 @@ export default {
       this.tap("check userid: " + USER_ID);
 
       if (JWT_TOKEN == null || JWT_TOKEN === "") {
+        this.isLogin = false;
         return;
       }
       //检查Token是否过期
@@ -347,9 +348,6 @@ export default {
       if (res.data.code === 0 || res.data.msg === "ojbk") {
         this.isLogin = true;
         this.loginUserName = saveLoginName;
-      } else {
-        this.tap("clear localStorage!");
-        localStorage.clear();
       }
     }
     this.curUserFace = this.getCurUserFace();
@@ -362,7 +360,8 @@ export default {
       if (
         localStorage.getItem("USER_ID") &&
         localStorage.getItem("JWT_TOKEN") &&
-        localStorage.getItem("loginUserName")
+        localStorage.getItem("loginUserName") &&
+          localStorage.getItem("ROLE")
        ) {
          this.isLogin = true;
          console.log("set isLogin true!");
@@ -370,8 +369,7 @@ export default {
        else {
         this.isLogin = false;
       }
-
-        if (localStorage.getItem("USER_ID")) {
+        if (localStorage.getItem("USER_ID") && this.isLogin) {
           this.intervalId = setInterval(() => {
             this.countUnreadMsg();
           }, 60000);

@@ -16,7 +16,7 @@
 
     <div>
       <div class="top" v-show="!showSearchResult">
-        <el-carousel :interval="500000" type="card" height="320px">
+        <el-carousel :interval="5000" type="card" height="320px">
           <el-carousel-item v-for="b in bangumis" :key="b.bangumiId">
             <div>
               <a @click="goBangumiDetail(b)" href="javascript:void(0);" class="c-img" :style="{'background-image':'url('+b.thumb+')'}">
@@ -203,8 +203,6 @@ a {
     background-repeat: no-repeat;
     display: inline-block;
     background-size: contain;
-
-    /*position: absolute;*/
   }
   .top {
     animation: ShowVideo 0.6s;;
@@ -227,9 +225,10 @@ a {
     margin-top: 60px;
     width: 980px;
     text-align: left;
+    animation: ShowVideo 0.4s;
   }
   .notify {
-    animation: ShowVideo 0.8s;
+    animation: ShowVideo 0.6s;
   }
 </style>
 <style>

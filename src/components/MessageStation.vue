@@ -1,9 +1,9 @@
 <template>
     <div class="message-div" style="width:980px;margin:0 auto;">
   <el-container style="min-height: 800px; border-radius:5px">
-  <el-aside style="margin-right:20px;background-color:#262633;" width="200px">
+  <el-aside class="msg-ctx-menu" style="margin-right:20px;background-color:#262633;" width="200px">
       <div class="msg-icon"></div>
-      <div class="msg-station">消息中心</div>
+      <div class="msg-station" style="color: #19584e">消息中心</div>
     <el-menu style="background-color:#262633;border:0" :default-active="pactiveIndex">
         <router-link :to="{name:'snotice'}">
             <el-menu-item @click="changeMsgTypeTitle('系统通知')" class="nav-item" index="1">系统通知</el-menu-item>
@@ -85,6 +85,7 @@ export default {
 <style scoped>
 .nav-item{
   color: #149287;
+  font-weight: 600;
 }
 .msg-station{
     margin: 20px;
@@ -100,5 +101,10 @@ export default {
     color: #149299;
     width: 100px;
 }
+</style>
+<style>
+  .msg-ctx-menu {
+    animation: ShowVideo 0.4s;
+  }
 </style>
 

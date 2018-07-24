@@ -17,7 +17,7 @@
       <div class="info">
         <span class="floor">#{{reply.reply.reply.floor}}</span>
         <!--<span class="plad">来自<a href="#/video" target="_blank">darker.online</a></span>-->
-        <span class="time">{{new Date(reply.reply.reply.createTime).toLocaleString()}}</span>
+        <span class="time">{{getDateDiff(reply.reply.reply.createTime)}}</span>
         <span @click="postAttitide(reply.reply.reply.replyId)" :class="{liked:reply.reply.likeStatus}"
               class="like "><i></i><span>{{reply.reply.reply.rLike}}</span></span>
         <!--<span class="hate "><i></i></span>-->
@@ -64,6 +64,7 @@
   import Operation from "./Operation.vue";
   import PostReply from "./PostReply.vue";
   import API from "../api/api";
+  import {formatDate} from "../global/time";
 
   export default {
     props: ["reply", "replies", "episode_id", "page", "index", "reply_total"],
@@ -89,6 +90,27 @@
       "post-reply": PostReply
     },
     methods: {
+      getDateDiff(time){
+        let minute = 1000 * 60;
+        let hour = minute * 60;
+        let day = hour * 24;
+        let now = new Date().getTime();
+        let diffValue = now - time;
+        if(diffValue < 0){return;}
+        let dayC =diffValue/day;
+        let hourC =diffValue/hour;
+        let minC =diffValue/minute;
+        if(dayC>=1){
+          return formatDate(new Date(time),"yyyy-MM-dd hh:mm")
+        }
+        else if(hourC>=1){
+          return ""+ parseInt(hourC) +"小时前";
+        }
+        else if(minC>=1){
+          return ""+ parseInt(minC) +"分钟前";
+        }else
+          return "刚刚";
+      },
       showReplyBox() {
         this.replyInfo.nick = this.reply.reply.user.nick;
         this.replyInfo.p_uid = this.reply.reply.user.uid;

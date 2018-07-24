@@ -256,7 +256,7 @@
           danmaku: {
             id: "null",
             api: "http://10.0.46.20:8080/dplayer/",
-            token: "tokendemo",
+            token: "",
             maximum: 1000,
             // addition: ["https://api.prprpr.me/dplayer/bilibili?aid=4157142"],
             user: "Father",

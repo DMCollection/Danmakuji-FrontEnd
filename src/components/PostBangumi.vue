@@ -328,6 +328,7 @@
     margin: 0 auto;
     overflow: hidden;
     height: 100%;
+    animation: ShowVideo 0.4s;
   }
 
   .pb-header {

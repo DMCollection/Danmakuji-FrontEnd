@@ -188,8 +188,9 @@
             localStorage.setItem("USER_ID", loginResData.user.uid);
             localStorage.setItem("JWT_TOKEN", loginResData.token);
             localStorage.setItem("loginUserName", loginResData.user.nick);
+            localStorage.setItem("ROLE",loginResData.user.role);
             setTimeout(() => {
-              // window.location.href = "/";
+              window.location.href = "/";
             }, 3000);
           }
         }

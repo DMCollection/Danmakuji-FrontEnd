@@ -1,5 +1,5 @@
 <template>
-  <el-container>
+  <el-container class="avatar-ctx-ani">
     <el-main>
       <div class="cur-avatar">
         <span style="display: block;font-size: 12px;color: #99a2aa;padding-bottom:15px;">当前头像</span>
@@ -8,7 +8,7 @@
       </div>
       <div class="upload-container" style="margin-top:50px">
         <!-- <a style="display: block;font-size: 12px;color: #99a2aa;" class="btn" @click="toggleShow">设置头像</a> -->
-        <el-button @click="toggleShow" type="primary">设置头像</el-button>
+        <el-button @click="toggleShow" size="small" type="primary">设置头像</el-button>
         <my-upload field="image"
                    @crop-success="cropSuccess"
                    @crop-upload-success="cropUploadSuccess"
@@ -133,6 +133,9 @@
   .vicp-wrap {
     background-color: #07070c !important;
     width: 450px !important;
+  }
+  .avatar-ctx-ani {
+    animation: ShowVideo 0.4s;
   }
 </style>
 

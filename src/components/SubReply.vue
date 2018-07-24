@@ -9,7 +9,7 @@
         <span class="text-con">{{m_reply.reply.content}}</span>
       </div>
       <div class="info">
-        <span class="time">{{new Date(m_reply.reply.modifyTime).toLocaleString()}}</span>
+        <span class="time">{{getDateDiff(m_reply.reply.modifyTime)}}</span>
         <span @click="postAttitide(m_reply.reply.replyId)" :class="{liked:m_reply.likeStatus}" class="like ">
                     <i></i>
                 <span>{{m_reply.reply.rLike}}</span>
@@ -31,6 +31,7 @@
 <script scoped>
   import operation from "./Operation.vue"
   import API from "../api/api";
+  import {formatDate} from "../global/time";
 
   export default {
     props: ["m_reply", "reply","index"],
@@ -50,6 +51,27 @@
       "operation": operation
     },
     methods: {
+      getDateDiff(time){
+        let minute = 1000 * 60;
+        let hour = minute * 60;
+        let day = hour * 24;
+        let now = new Date().getTime();
+        let diffValue = now - time;
+        if(diffValue < 0){return;}
+        let dayC =diffValue/day;
+        let hourC =diffValue/hour;
+        let minC =diffValue/minute;
+        if(dayC>=1){
+          return formatDate(new Date(time),"yyyy-MM-dd hh:mm");
+        }
+        else if(hourC>=1){
+          return ""+ parseInt(hourC) +"小时前";
+        }
+        else if(minC>=1){
+          return ""+ parseInt(minC) +"分钟前";
+        }else
+          return "刚刚";
+      },
       showReplyBox() {
         this.tap("setInfo from SubRply!")
         this.replyInfo.nick = this.m_reply.user.nick;

@@ -54,7 +54,7 @@
         }
       },
       async initBangumi(bid){
-        console.log("init bangumi, bid:",bid)
+        console.log("init bangumi, bid:",bid);
         let res = await API.getBangumiById(bid);
         let rd = res.data;
         console.log("bangumi res:",rd);

@@ -82,10 +82,11 @@
           sign: this.userInfo.sign
         };
         console.log(user);
-        if (user.sex && user.age !== '') {
+        if (user.sex!=='' && user.age !== '') {
           let res = await API.updateUserInfo(uid, user);
+          console.log("-------res:",res);
           let rd = res.data;
-          console.log(rd);
+          console.log("res dataaaaaa:",rd);
           if (rd.code === 0) {
             console.log("修改成功");
             this.userInfo.age = rd.data.age;
@@ -93,8 +94,11 @@
             this.userInfo.sign = rd.data.sign;
             this.$message.success("修改成功");
           } else {
-            console.log(rd.msg);
-            this.$message.error(rd.msg);
+            console.log("修改失败");
+            this.$message({
+              message: rd.msg,
+              type: "error"
+            });
           }
         }
       }
@@ -118,7 +122,9 @@
   .el-textarea{
     display: inherit;
   }
-
+  .p-infos {
+    animation: ShowVideo 0.4s;
+  }
 
 </style>
 <style>

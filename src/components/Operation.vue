@@ -6,7 +6,7 @@
             trigger="click"
             v-model="visible1"
     >
-      <div v-if="r_uid === uid" class="del-self">
+      <div v-if="role === 'ROLE_ADMIN' || role === 'ROLE_MANAGER' || r_uid === uid" class="del-self">
         <el-popover
                 placement="top"
                 width="160"
@@ -46,7 +46,8 @@
         },
         uid: "",
         visible1: false,
-        visible2: false
+        visible2: false,
+        role: ""
       }
     },
     methods: {
@@ -79,8 +80,12 @@
     },
     created() {
       let uid = localStorage.getItem("USER_ID");
+      let role = localStorage.getItem("ROLE");
       if(uid){
-        this.uid = uid;
+        this.uid = parseInt(uid);
+      }
+      if(role){
+        this.role = role;
       }
     }
   }

@@ -20,13 +20,13 @@
     <div class="item-content">
         <div class="user-face">
             <a :href="'#/user/'+notice.publisher.uid" target="_blank">
-            <img :src="notice.publisher.face?notice.publisher.face:'/static/defaultface.png'" class="avatar" />
+            <img :src="notice.publisher.face?notice.publisher.face:'/static/akari.jpg'" class="avatar" />
             </a>
         </div>
         <div class="reply-content">
             <div class="nick-time">
                 <a :href="'#/user/'+notice.publisher.uid" target="_blank" class="nick-text">{{notice.publisher.nick}}</a>
-                <span class="time-text">{{new Date(notice.modify_time).toLocaleString()}}</span>
+                <span class="time-text">{{getDateDiff(notice.modify_time)}}</span>
             </div>
             <div class="reply-ctx">
                 <a :href="'#/video/'+notice.ep_id+'?rid='+notice.reply_id" target="_blank" class="reply-text">{{notice.content}}</a>
@@ -51,6 +51,7 @@
 <script>
 import infiniteScroll from "vue-infinite-scroll";
 import API from "../api/api";
+import {formatDate} from "../global/time";
 
 export default {
   data() {
@@ -64,6 +65,27 @@ export default {
     infiniteScroll
   },
   methods: {
+    getDateDiff(time){
+      let minute = 1000 * 60;
+      let hour = minute * 60;
+      let day = hour * 24;
+      let now = new Date().getTime();
+      let diffValue = now - time;
+      if(diffValue < 0){return;}
+      let dayC =diffValue/day;
+      let hourC =diffValue/hour;
+      let minC =diffValue/minute;
+      if(dayC>=1){
+        return formatDate(new Date(time),"yyyy-MM-dd hh:mm")
+      }
+      else if(hourC>=1){
+        return ""+ parseInt(hourC) +"小时前";
+      }
+      else if(minC>=1){
+        return ""+ parseInt(minC) +"分钟前";
+      }else
+        return "刚刚";
+    },
     async initReplyNotices() {
       let uid = localStorage.getItem("USER_ID");
       console.log("init replyNotices!!!");
@@ -115,7 +137,8 @@ export default {
 
 <style scoped>
 .reply-me-container {
-    height: 100%;
+  height: 100%;
+  animation: ShowVideo 0.4s;
 }
 .avatar {
   display: block;

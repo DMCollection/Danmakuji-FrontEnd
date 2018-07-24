@@ -33,7 +33,20 @@ axios.interceptors.response.use(
       switch (err.response.status) {
         case 403:
           err.message = err.response.data.msg;
-          break;
+          Vue.prototype.$message({
+            message: err.message,
+            type: "error"
+          });
+          console.log("ready to clear/..............");
+          localStorage.setItem("USER_ID", "");
+          localStorage.setItem("JWT_TOKEN", "");
+          localStorage.setItem("loginUserName", "");
+          localStorage.setItem("face","");
+          localStorage.setItem("ROLE","");
+          setTimeout(() => {
+            window.location.href = "/";
+          }, 2500);
+          return ;
 
         case 404:
           err.message = `请求地址出错: ${err.response.config.url}`;
