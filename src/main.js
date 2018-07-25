@@ -15,7 +15,7 @@ Vue.prototype.tap = function(x) {
 Vue.use(VueAnalytics, {
   id: 'UA-122809613-1',
   router
-})
+});
 Vue.prototype.GLOBAL = global;
 // router
 new Vue({

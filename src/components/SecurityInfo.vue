@@ -47,7 +47,7 @@
         </div>
         <el-form :model="email" :rules="eRules" ref="email-form" size="small" :inline="true">
           <el-form-item prop="email">
-            <el-input v-model="email.email" placeholder="新邮箱"></el-input>
+            <el-input :disabled="true" v-model="email.email" placeholder="开发中..."></el-input>
           </el-form-item>
           <el-form-item>
             <el-button style="background-color: #3f51b5;color: #e4e4e6">更换</el-button>

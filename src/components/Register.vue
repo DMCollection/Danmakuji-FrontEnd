@@ -274,7 +274,7 @@
     margin-top: 20px;
     width: 420px;
     height: 320px;
-    background: url(/static/zz.gif) 50% 50% no-repeat;
+    /*background: url(/static/zz.gif) 50% 50% no-repeat;*/
     /* border-radius: 64px; */
     /* box-shadow: 0 0 2px #fbfbfb inset, 0 0 4px #fbfbfb inset, 0 0 8px #fbfbfb inset, 0 0 16px #fbfbfb inset, 0 0 32px #fbfbfb inset, 0 0 64px #fbfbfb inset; */
   }

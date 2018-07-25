@@ -106,7 +106,7 @@
     },
     created() {
       console.log("likeNotice.vue created");
-      this.initSysNotices();
+      // this.initSysNotices();
     }
   };
 </script>

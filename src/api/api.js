@@ -75,8 +75,8 @@ axios.interceptors.response.use(
 
 //本地开发请设置为"/api"
 // const baseURL = "http://207.148.103.82:8080";
-// const baseURL = "";
-const baseURL = "http://10.0.46.20:8080";
+const baseURL = "";
+// const baseURL = "http://10.0.46.20:8080";
 
 //  登录相关
 const login = data => {

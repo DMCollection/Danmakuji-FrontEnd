@@ -255,7 +255,8 @@
           },
           danmaku: {
             id: "null",
-            api: "http://10.0.46.20:8080/dplayer/",
+            // api: "http://10.0.46.20:8080/dplayer/",
+            api: "/dplayer/",
             token: "",
             maximum: 1000,
             // addition: ["https://api.prprpr.me/dplayer/bilibili?aid=4157142"],
@@ -510,7 +511,8 @@
           },
           {
             id: danmakuId,
-            api: "http://10.0.46.20:8080/dplayer/",
+            api: "/dplayer/",
+            // api: "http://10.0.46.20:8080/dplayer/",
             token: localStorage.getItem("JWT_TOKEN"),
             maximum: 1000,
             // addition: ['https://api.prprpr.me/dplayer/bilibili?aid=4157142'],
