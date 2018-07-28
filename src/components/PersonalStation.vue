@@ -1,7 +1,7 @@
 <template>
   <div class="persondiv" style="width:980px;margin:0 auto;">
     <el-container style="height: 800px; border-radius:5px">
-      <el-aside style="margin-right:20px;background-color:#262633;" width="200px">
+      <el-aside class="person-ctn-menu" style="margin-right:20px;background-color:#262633;" width="200px">
         <el-menu style="background-color:#262633;border:0" :default-active="pactiveIndex">
           <router-link :to="{name:'avatar'}">
             <el-menu-item class="nav-item" index="1">头像信息</el-menu-item>
@@ -50,6 +50,12 @@
 <style scoped>
   .nav-item {
     color: #149287;
+    font-weight: 600;
+  }
+</style>
+<style>
+  .person-ctn-menu {
+    animation: ShowVideo 0.4s;
   }
 </style>
 

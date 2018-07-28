@@ -13,7 +13,7 @@
       <div class="pb-status">
         状态:
         <div :class="{pending:isPending,failed: isFailed,success: isSuccess,nperfect: isNotPerfect,auditing: isAuditing}"
-             style="float: right;border-radius: 5px;width: 48px;height: 21px;">
+             style="float: right;border-radius: 5px;width: auto;height: 21px;">
           <span>{{pbTemp.pbs_name}}</span>
         </div>
       </div>
@@ -55,13 +55,13 @@
           <el-dropdown-item>
             <div class="action-btn-group">
             <el-button v-if="postBangumi.pbs === 'SUCCESS' || postBangumi.pbs === 'AUDITING'" size="mini" class="thumb"
-                       @click="toggleShow">设置封面
+                       @click="toggleShow">修改封面
             </el-button>
             </div>
           </el-dropdown-item>
           <el-dropdown-item>
             <div class="action-btn-group">
-            <el-button v-if="postBangumi.pbs !== 'SUCCESS' || postBangumi.pbs === 'AUDITING'" size="mini" class="edit"
+            <el-button v-if="postBangumi.pbs !== 'SUCCESS' && postBangumi.pbs !== 'AUDITING'" size="mini" class="edit"
                        @click="dialogVisible=true">修改
             </el-button>
             </div>
@@ -234,7 +234,9 @@
         console.log('field: ' + field);
         // console.log('curImageUrl:', this.curImageUrl);
 
-        this.updatePostBangumiThumb();
+        if (this.pbTemp.pbs === 'SUCCESS' || this.pbTemp.pbs === 'AUDITING') {
+          this.updatePostBangumiThumb();
+        }
       },
       cropSuccess(imgDataUrl, field) {
         console.log('-------- crop success --------');

@@ -2,17 +2,17 @@
   <div class="user-p-container">
     <div class="profile-wrapper">
       <div class="u-avatar">
-        <img class="avatar-img" :src="userInfo.face?userInfo.face:'/static/rm.jpg'"/>
+        <img class="avatar-img" :src="userInfo.face?userInfo.face:'/static/akari.jpg'"/>
       </div>
       <div class="u-infos">
         <div class="u-nick">
           <span >{{userInfo.nick}}</span>
         </div>
-        <div class="u-sex">
-          <span >{{userInfo.sex}}</span>
+        <div class="u-id">
+          <span >id:{{userInfo.uid}}</span>
         </div>
-        <div class="u-age">
-          <span >{{userInfo.uid}}</span>
+        <div class="u-sex">
+          <span >性别 {{userInfo.sex}}</span>
         </div>
         <div class="u-sign">
           <span >{{userInfo.sign}}</span>
@@ -40,6 +40,12 @@
           console.log("获取用户信息成功,", rd.data);
           this.userInfo = rd.data;
         }
+        else {
+          this.$message({
+            message: rd.msg,
+            type: "error"
+          });
+        }
       }
     },
     created() {
@@ -60,21 +66,24 @@
 
   .user-p-container{
     margin: 0 auto;
-    width: 50%;
-    height: 100%;
+    margin-top: 40px;
+  }
+  .profile-wrapper {
+    display: inline-flex;
+    animation: ShowVideo 0.4s;
   }
   .u-avatar {
     position: relative;
     float: left;
-    width: 64px;
-    height: 64px;
+    width: 100px;
+    height: 100px;
     border: 2px solid hsla(0, 0%, 100%, .4);
     border-radius: 52px;
   }
 
   .avatar-img {
-    width: 64px;
-    height: 64px;
+    width: 100px;
+    height: 100px;
     /* background: #fff; */
     border-radius: 48px;
   }
@@ -88,10 +97,10 @@
 
   .u-infos span {
     display: inline-block;
-    margin-right: 5px;
-    font-weight: 700;
-    line-height: 18px;
-    font-size: 18px;
+    margin: 3px;
+    font-weight: 600;
+    line-height: 20px;
+    font-size: 16px;
     vertical-align: middle;
   }
 </style>

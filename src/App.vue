@@ -4,9 +4,9 @@
 <el-container style="height: 100%">
   <!-- <el-header class="appheader" style="border-bottom: solid 1px #e6e6e6;box-shadow: 0 0 1px 0px rgba(0,0,0,.1);"> -->
  <el-header class="appheader"
-            style="background-color: rgba(20,20,34,0.9);
+            style="background-color: rgb(20, 20, 34);
             box-shadow: 0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.24);">
- <div style="width:980px;margin:0 auto;">
+ <div style="width:980px;margin:0 auto;position: relative; z-index: 200">
 
 <el-menu
   :default-active="activeIndex"
@@ -16,42 +16,14 @@
   style="border-bottom:none;background-color:inherit">
 
   <el-menu-item class="header-link" style="border-bottom:none" index="1">
-    <router-link :to="{name:'HelloWorld'}">首页</router-link>
+    <router-link @click.native="goMP" :to="{name:'HelloWorld'}">首页</router-link>
   </el-menu-item>
   <el-menu-item class="header-link" style="border-bottom:none" index="2">
-    <router-link :to="{name:'video'}">观看</router-link>
+    <router-link @click.native="goVideo" :to="{name:'video'}">观看</router-link>
   </el-menu-item>
-
-  <!-- <el-popover 
-    trigger="hover"
-    placement="top"
-    width="160"
-    v-model="showLogin">
-
-    <div class="loginGroup">
-      <el-input v-model="nameInput" placeholder="账号"></el-input>
-
-      <el-input v-model="passwordInput" type="password" placeholder="密码"></el-input>
-
-      <el-checkbox v-model="rememberMe">记住我</el-checkbox>
-      <div style="text-align: right; margin: 0">
-        <el-button size="mini" type="text" @click="registerPage">注册</el-button>
-        <el-button type="primary" size="mini" @click="login">确定</el-button>
-      </div>
-    </div>
-
-    <div class="loginedGroup" v-show="isLogin">
-      <p> 已登录:{{loginUserName}}</p>
-      <div style="text-align: right; margin: 0">
-        <el-button size="mini" type="text" @click="showLogin = false">取消</el-button>
-        <el-button type="primary" size="mini" @click="logout">注销</el-button>
-      </div>      
-    </div>
-      <el-button type="primary" slot="reference" circle ><i></i></el-button>
-  </el-popover> -->
             <el-dropdown class="avatar-container" placement="bottom">
                 <div class="avatar-wrapper">
-                    <img class="user-avatar" :src="curUserFace?curUserFace:'/static/defaultface.png'">
+                    <img class="user-avatar" :src="curUserFace?curUserFace:'/static/akari.jpg'">
                 </div>
                 <el-dropdown-menu v-if="isLogin" :visibleArrow="false" class="user-dropdown" slot="dropdown">
                         <router-link :to="{name:'personal'}">
@@ -72,12 +44,11 @@
                               <div class="i_menu i_menu_login">
                                 <p class="tip">登录后你可以：</p> 
                                 <div class="img">
-                                <!--<img src="/static/sk.jpg">-->
                                 <img src="/static/sticker.webp">
                                 </div>
                             </div>
                             <el-button style="width:320px" @click="$router.push({path:'/login'})" type="primary">
-                              登陆
+                              登入
                             </el-button> 
                             <p class="reg">首次使用？<a href="#/register">点我去注册</a></p>
                             </div>
@@ -87,7 +58,7 @@
             </el-dropdown>
   
             <el-dropdown class="message-container" placement="bottom" v-if="isLogin">
-                <div>
+                <div v-if="isLogin">
                   <el-badge v-if="unreadMsg>0" :value="unreadMsg" :max="99" class="item">
                     <!-- <a class="message-pos" href="#">消息</a> -->
                     <el-button class="header-link" type="text">消息</el-button>
@@ -146,8 +117,8 @@
 
 
 
-  <el-main style="background-color: #141422;overflow: initial;">
-      <router-view></router-view>
+  <el-main style="background-color: #141422;overflow: initial;padding: 0">
+      <router-view :key="activeDate"></router-view>
   </el-main>
   <myfooter></myfooter>
 
@@ -204,8 +175,9 @@ export default {
       unreadReplyMsg: 0,
       unreadAtMsg: 0,
       unreadLikeMsg: 0,
-      intervalId: ""
-    };
+      intervalId: "",
+      activeDate: ""
+    }
   },
   methods: {
     handleSelect(key, keyPath) {
@@ -346,6 +318,14 @@ export default {
           this.unreadMsg -= this.unreadAtMsg;
           this.unreadAtMsg = 0;
       }
+    },
+    goMP(){
+      console.log("goMP!");
+      this.activeDate = new Date().getTime();
+    },
+    goVideo(){
+      console.log("goVideo!");
+      this.activeDate = new Date().getTime();
     }
   },
 
@@ -357,6 +337,7 @@ export default {
       this.tap("check userid: " + USER_ID);
 
       if (JWT_TOKEN == null || JWT_TOKEN === "") {
+        this.isLogin = false;
         return;
       }
       //检查Token是否过期
@@ -366,9 +347,6 @@ export default {
       if (res.data.code === 0 || res.data.msg === "ojbk") {
         this.isLogin = true;
         this.loginUserName = saveLoginName;
-      } else {
-        this.tap("clear localStorage!");
-        localStorage.clear();
       }
     }
     this.curUserFace = this.getCurUserFace();
@@ -381,13 +359,16 @@ export default {
       if (
         localStorage.getItem("USER_ID") &&
         localStorage.getItem("JWT_TOKEN") &&
-        localStorage.getItem("loginUserName")
+        localStorage.getItem("loginUserName") &&
+          localStorage.getItem("ROLE")
        ) {
          this.isLogin = true;
          console.log("set isLogin true!");
        }
-
-        if (localStorage.getItem("USER_ID")) {
+       else {
+        this.isLogin = false;
+      }
+        if (localStorage.getItem("USER_ID") && this.isLogin) {
           this.intervalId = setInterval(() => {
             this.countUnreadMsg();
           }, 60000);
@@ -405,7 +386,7 @@ export default {
 <style>
 body {
   margin: 0;
-  background-image: url(/static/star-background.jpg);
+  /*background-image: url(/static/star-background.jpg);*/
 }
 #app {
   font-family: "Avenir", Helvetica, Arial, sans-serif, FontAwesome;

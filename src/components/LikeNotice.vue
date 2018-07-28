@@ -19,15 +19,8 @@
                 <div class="like-ctx">
                   <a :href="'#/video/'+notice.ep_id+'?rid='+notice.reply_id" target="_blank" class="reply-text">{{notice.content}}</a>
                 </div>
-                <span class="time-text">{{new Date(notice.modify_time).toLocaleString()}}</span>
+                <span class="time-text">{{getDateDiff(notice.modify_time)}}</span>
               </div>
-              <!-- <div class="nick-time">
-                  <span class="nick-text">{{notice.publisher.nick}}</span>
-                  <span class="time-text">{{new Date(notice.modify_time).toLocaleString()}}</span>
-              </div>
-              <div class="reply-ctx">
-                  <a :href="'#/video/'+notice.ep_id+'?rid='+notice.reply_id" target="_blank" class="reply-text">{{notice.content}}</a>
-              </div> -->
             </div>
           </div>
         </div>
@@ -42,6 +35,7 @@
 <script>
   import infiniteScroll from "vue-infinite-scroll";
   import API from "../api/api";
+  import {formatDate} from "../global/time";
 
   export default {
     data() {
@@ -55,6 +49,27 @@
       infiniteScroll
     },
     methods: {
+      getDateDiff(time){
+        let minute = 1000 * 60;
+        let hour = minute * 60;
+        let day = hour * 24;
+        let now = new Date().getTime();
+        let diffValue = now - time;
+        if(diffValue < 0){return;}
+        let dayC =diffValue/day;
+        let hourC =diffValue/hour;
+        let minC =diffValue/minute;
+        if(dayC>=1){
+          return formatDate(new Date(time),"yyyy-MM-dd hh:mm")
+        }
+        else if(hourC>=1){
+          return ""+ parseInt(hourC) +"小时前";
+        }
+        else if(minC>=1){
+          return ""+ parseInt(minC) +"分钟前";
+        }else
+          return "刚刚";
+      },
       async initReplyNotices() {
         let uid = localStorage.getItem("USER_ID");
         console.log("init likeNotices!!!");
@@ -107,6 +122,7 @@
     height: 100%;
     width: 100%;
     margin: 0 auto;
+    animation: ShowVideo 0.4s;
   }
 
   .user-face {
@@ -118,7 +134,6 @@
     width: 46px;
     height: 46px;
     border-radius: 50%;
-    -ms-flex-negative: 0;
     flex-shrink: 0;
   }
 

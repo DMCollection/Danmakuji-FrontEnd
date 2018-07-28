@@ -45,7 +45,6 @@
 </template>
 
 <script>
-import bus from "../assets/eventBus"
 export default {
     data(){
         return {

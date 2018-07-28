@@ -10,7 +10,7 @@
                 <div class="block r">
                     <div class="area-reg">
                         <el-form id="form-reg" class="form" status-icon ref="reg">
-                        <h3 class="title">登陆 Darker</h3>
+                        <h3 class="title">登入 Darker</h3>
                         <div class="area">
                         <el-form-item>
                             <el-input id="ipt-username-reg" name="name" v-model="loginData.principal" type="text" auto-complete="off" class="regname name l error" placeholder="昵称/邮箱" required="required"></el-input>
@@ -20,7 +20,7 @@
                         
                         <div class="area">
                         <el-form-item >
-                            <el-input id="ipt-pwd-reg" name="password" v-model="loginData.password" type="password" auto-complete="off" placeholder="请输入密码，6-20位" class="password l error" required="required"></el-input>
+                            <el-input id="ipt-pwd-reg" @keyup.enter.native="login" name="password" v-model="loginData.password" type="password" auto-complete="off" placeholder="请输入密码，6-20位" class="password l error" required="required"></el-input>
                         </el-form-item>  
                         <span class="clearfix"></span>
                         </div>
@@ -37,10 +37,9 @@
                         </el-form-item>
                         <span class="clearfix"></span>
                         </div>
-                    
-                       
+
                         <div class="area-tool">
-                        <a @click="login" class="do login-btn primary">登陆</a>
+                        <a @click="login" class="do login-btn primary">登入</a>
                         <div id="launchBtn" class="launchBtn bg hidden">
                         </div>
                         <p></p>
@@ -76,7 +75,7 @@ export default {
         password: this.loginData.password,
         remember_me: this.loginData.remember_me ? 1 : 0
       };
-      if (loginInfo.principal == "" || loginInfo.password == "") {
+      if (loginInfo.principal === "" || loginInfo.password === "") {
         this.$message({
           message: "账号或密码为空",
           type: "info"
@@ -122,6 +121,7 @@ export default {
         localStorage.setItem("JWT_TOKEN", token);
         localStorage.setItem("loginUserName", loginUserName);
         localStorage.setItem("face",rd.data.user.face);
+        localStorage.setItem("ROLE",rd.data.user.role);
         window.location.href = "/"
       }
     },
@@ -200,9 +200,6 @@ div {
     margin-top: 20px;
     width: 420px;
     height: 320px;
-    background: url(/static/zz.gif) 50% 50% no-repeat;
-    /* border-radius: 64px; */
-    /* box-shadow: 0 0 2px #fbfbfb inset, 0 0 4px #fbfbfb inset, 0 0 8px #fbfbfb inset, 0 0 16px #fbfbfb inset, 0 0 32px #fbfbfb inset, 0 0 64px #fbfbfb inset; */
 }
 #area-reg .r .area-reg {
     width: 380px;
@@ -276,18 +273,6 @@ a {
 .area {
     position: relative;
 }
-/* #area-reg .r .area-reg .form .area .inp-icon.icon-mobile {
-    left: 10px;
-    top: 11px;
-    font-size: 22px;
-}
-#area-reg .r .area-reg .form .area .inp-icon {
-    position: absolute;
-    left: 13px;
-    top: 14px;
-    color: #d9d9d9;
-    font-size: 16px;
-} */
 .icon-mobile-phone:before, .icon-mobile:before {
     content: "\f10b";
 }
@@ -305,10 +290,6 @@ a {
     font-size: 14px;
     border: 1px solid rgb(180, 179, 179);
 }
-/* input.error, textarea.error {
-    border-color: #c00 !important;
-    color: #c33 !important;
-} */
 .clearfix {
     display: inline-block;
     margin: 0;
@@ -337,21 +318,6 @@ a {
     padding-left: 10px;
     margin-right: 0;
 }
-/* #area-reg .r .area-reg .form .area input#send-mobile-code.dis {
-    background: #eee;
-    color: #c2c2c2;
-}
-#area-reg .r .area-reg .form .area input#send-mobile-code {
-    margin-right: 0;
-    margin-left: 18px;
-    padding-left: 0;
-    width: 165px;
-    float: left;
-    text-align: center;
-    border-radius: 5px;
-    color: #868686;
-    cursor: pointer;
-} */
 #area-reg .r .area-reg .form .area-agree {
     color: #777;
     font-size: 12px;

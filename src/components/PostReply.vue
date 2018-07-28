@@ -1,7 +1,7 @@
 <template>
     <div  class="comment-send">
         <div class="user-face">
-            <img class="user-head" :src="curUserFace?curUserFace:'/static/defaultface.png'">
+            <img class="user-head" :src="curUserFace?curUserFace:'/static/akari.jpg'">
         </div>
         <div :class="{'focus':activeFocus}" class="textarea-container">
             <i class="ipt-arrow"></i>

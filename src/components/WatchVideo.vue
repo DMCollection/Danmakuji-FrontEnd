@@ -27,7 +27,7 @@
             </el-button>
           </div>
           <div>
-            <el-button type="info" v-on:click="haventResultBtn"
+            <el-button type="info" v-on:click="handleNoResult"
                        style="padding: 6px 20px 6px 20px;margin-top: 20px;border-radius:1px;">以上都不是
             </el-button>
           </div>
@@ -119,7 +119,7 @@
               <el-option v-for="item in searchOption" :key="item.value" :label="item.label"
                          :value="item.value"></el-option>
               <el-option v-if="searchOption.length===0 && hasSearch" value="">
-                <el-button type="text" style="padding: 0;" v-on:click="postBangumiDialogVisible = true">找不到该番剧?提交给我们吧!
+                <el-button type="text" style="padding: 0;" v-on:click="postPostBangumiToUs">找不到该番剧?提交给我们吧!
                 </el-button>
               </el-option>
             </el-select>
@@ -161,8 +161,13 @@
     </div>
 
     <div v-show="episodeId!==''" class="cm-container">
-      <comment v-on:updateRepliesAndPage="updateRepliesAndPage" :replies="replies" :episode_id="episodeId"
-               :page="page" :hot="hot"></comment>
+      <comment v-on:updateRepliesAndPage="updateRepliesAndPage"
+               v-on:refreshComm="refreshComm"
+               :replies="replies" :episode_id="episodeId"
+               :page="page"
+               :hot="hot">
+
+      </comment>
     </div>
   </div>
 
@@ -239,47 +244,26 @@
           screenshot: true,
           hotkey: true,
           preload: "auto",
-          // logo: '/static/logo.png',
           volume: 0.7,
           mutex: true,
           opacity: 1,
 
           video: {
             url: this.videoURL,
-            // url: "http://static.smartisanos.cn/common/video/t1-ui.mp4",
-            pic: "/static/placeholder.png",
-            // thumbnails: "thumbnails.jpg",
+            pic: "",
             type: "auto"
           },
-          // subtitle: {
-          //   url: "dplayer.vtt",
-          //   type: "webvtt",
-          //   fontSize: "25px",
-          //   bottom: "10%",
-          //   color: "#b7daff"
-          // },
           danmaku: {
             id: "null",
-            api: "http://10.0.46.20:8080/dplayer/",
-            token: "tokendemo",
+            // api: "http://10.0.46.20:8080/dplayer/",
+            api: "/dplayer/",
+            token: "",
             maximum: 1000,
             // addition: ["https://api.prprpr.me/dplayer/bilibili?aid=4157142"],
             user: "Father",
             bottom: "15%",
             unlimited: true
-          },
-          contextmenu: [
-            {
-              text: "custom1",
-              link: "https://github.com/DIYgod/DPlayer"
-            },
-            {
-              text: "custom2",
-              click: player => {
-                this.tap(player);
-              }
-            }
-          ]
+          }
         }
       };
     },
@@ -315,6 +299,8 @@
         this.episodeId = res.data.data.episodeId;
         this.bangumiName = res.data.data.bangumiName;
         this.hasInfo = true;
+        this.danmakuCount = res.data.data.danmakuCount;
+        this.viewCount = res.data.data.viewCount;
         this.initComments();
         this.sendVideoInfo();
       }
@@ -384,7 +370,6 @@
         });
       },
       reSearchBangumi() {
-
         if (this.expectVideo !== '' && this.videoList.length !== 0) {
           this.dialogConfirmBangumiVisible = true;
         } else {
@@ -406,8 +391,8 @@
         this.tap(fileSize);
         this.tap("handleFileChange, fileURL:" + this.videoURL);
         this.tap(file);
-        let fullMD5 = await this.getFileMd5Full(file.raw);
-        this.tap("get FullMD5 done! md5: " + fullMD5);
+        // let fullMD5 = await this.getFileMd5Full(file.raw);
+        // this.tap("get FullMD5 done! md5: " + fullMD5);
         //立刻开始播放
         // this.switchVideo(this.videoURL, "");
 
@@ -419,7 +404,7 @@
 
         let videosInfos = resData.data.videoInfos;
         let expectVideo = resData.data.ev;
-        if (resData.code === "0" || resData.msg === "OK") {
+        if (resData.code === 0 || resData.msg === "OK") {
           console.log("videoInfo: ", videosInfos);
           console.log("expectVideo", expectVideo);
 
@@ -432,12 +417,11 @@
               this.hasInfo = false;
               this.isMatch = false;
             }
-
-            if (videosInfos.length > 1) {
+            else if (videosInfos.length > 1) {
               this.dialogConfirmBangumiVisible = true;
               this.videoList = videosInfos;
             }
-            if (videosInfos.length === 1) {
+            else if (videosInfos.length === 1) {
               this.isMatch = true;
               this.hasInfo = true;
               let videosInfo = videosInfos[0];
@@ -462,7 +446,8 @@
                   type: 'success'
                 });
               }, 800)
-            } else {
+            }
+            else {
               this.tap("没有弹幕，直接播放, videoURL:" + this.videoURL);
               this.switchVideo(this.videoURL, "");
               this.playerOpts.autoplay = false;
@@ -472,7 +457,7 @@
               this.episodeIndex = "";
               this.episodeId = "";
               this.viewCount = "";
-              this.replies = [];
+              this.replies = "";
               this.danmakuCount = "";
             }
           } else {
@@ -486,7 +471,7 @@
             this.episodeIndex = expectVideo.episodeIndex;
             this.episodeId = expectVideo.episodeId;
             this.viewCount = expectVideo.viewCount;
-            this.danmakuCount = videosInfo.danmakuCount;
+            this.danmakuCount = expectVideo.danmakuCount;
             this.tap("setEpId in:" + expectVideo.episodeId);
             this.initComments();
             this.tap("bangumiName:" + this.bangumiName);
@@ -525,7 +510,8 @@
           },
           {
             id: danmakuId,
-            api: "http://10.0.46.20:8080/dplayer/",
+            api: "/dplayer/",
+            // api: "http://10.0.46.20:8080/dplayer/",
             token: localStorage.getItem("JWT_TOKEN"),
             maximum: 1000,
             // addition: ['https://api.prprpr.me/dplayer/bilibili?aid=4157142'],
@@ -580,7 +566,8 @@
           console.log("episode:", rd);
           this.bangumiName = rd.data.bangumiName;
           this.episodeIndex = rd.data.episodeIndex;
-
+          this.viewCount = rd.data.viewCount;
+          this.danmakuCount = rd.data.danmakuCount;
           const player = this.$refs.player.dp;
           console.log("player", player);
           player.video.pic = rd.data.thumb;
@@ -638,6 +625,8 @@
         this.bangumiName = videosInfo.bangumiName;
         this.episodeIndex = videosInfo.episodeIndex;
         this.episodeId = videosInfo.episodeId;
+        this.danmakuCount = videosInfo.danmakuCount;
+        this.viewCount = videosInfo.viewCount;
         this.dialogConfirmBangumiVisible = false;
         this.switchVideo(this.videoURL, danmakuId);
         this.initComments();
@@ -669,10 +658,17 @@
           this.replies = [];
         }
       },
-      haventResultBtn() {
+      handleNoResult() {
         this.dialogConfirmBangumiVisible = false;
         this.hasInfo = false;
         this.isMatch = false;
+      },
+      postPostBangumiToUs(){
+        if (localStorage.getItem("JWT_TOKEN")) {
+          this.postBangumiDialogVisible = true;
+        } else {
+          this.$message.warning("请先登陆后再提交吧~");
+        }
       },
       async sendPostBangumiInfo() {
         let bangumiName = this.postBangumi.bangumiName;
@@ -737,6 +733,12 @@
         console.log(status);
         console.log('field: ' + field);
       },
+      refreshComm(rd){
+        console.log("refreshComment!");
+        this.replies = rd.data.replies;
+        this.page = rd.data.page;
+        this.hot = rd.data.hot;
+      }
     }
     ,
     mounted() {
@@ -1016,6 +1018,9 @@
 
   .bangumi-info span {
     margin-left: 8px;
+  }
+  .el-collapse-item__header.is-active {
+    overflow-x: hidden;
   }
 
   @keyframes ShowVideo {

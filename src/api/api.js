@@ -33,7 +33,20 @@ axios.interceptors.response.use(
       switch (err.response.status) {
         case 403:
           err.message = err.response.data.msg;
-          break;
+          Vue.prototype.$message({
+            message: err.message,
+            type: "error"
+          });
+          console.log("ready to clear/..............");
+          localStorage.setItem("USER_ID", "");
+          localStorage.setItem("JWT_TOKEN", "");
+          localStorage.setItem("loginUserName", "");
+          localStorage.setItem("face","");
+          localStorage.setItem("ROLE","");
+          setTimeout(() => {
+            window.location.href = "/";
+          }, 2500);
+          return ;
 
         case 404:
           err.message = `请求地址出错: ${err.response.config.url}`;
@@ -62,8 +75,8 @@ axios.interceptors.response.use(
 
 //本地开发请设置为"/api"
 // const baseURL = "http://207.148.103.82:8080";
-// const baseURL = "";
-const baseURL = "http://10.0.46.20:8080";
+const baseURL = "";
+// const baseURL = "http://10.0.46.20:8080";
 
 //  登录相关
 const login = data => {
@@ -196,18 +209,18 @@ const sendPostBangumi = data => {
   return axios.post(`${baseURL}/postBangumis`, data);
 };
 
-const updatePostBangumi =data=>{
-  return axios.put(`${baseURL}/postBangumis`,data);
+const updatePostBangumi = data => {
+  return axios.put(`${baseURL}/postBangumis`, data);
 };
 
 const getUserPostBangumi = data => {
-  return axios.get(`${baseURL}/postBangumis`,{
+  return axios.get(`${baseURL}/postBangumis`, {
     params: data
   });
 };
 
-const updatePostBangumiThumb = data =>{
-  return axios.put(`${baseURL}/postBangumis/thumb`,data);
+const updatePostBangumiThumb = data => {
+  return axios.put(`${baseURL}/postBangumis/thumb`, data);
 };
 
 const deletePostBangumi = pbId => {
@@ -215,7 +228,37 @@ const deletePostBangumi = pbId => {
 };
 
 const matchVideoSuccess = data => {
-  return axios.post(`${baseURL}/videos/matchSuccess`,data);
+  return axios.post(`${baseURL}/videos/matchSuccess`, data);
+};
+
+const getEpisodesByBid = bid => {
+  return axios.get(`${baseURL}/episodes/bid/${bid}`);
+};
+
+const getBangumiById = bid => {
+  return axios.get(`${baseURL}/bangumis/${bid}`);
+};
+
+const getMostViewBangumis = () => {
+  return axios.get(`${baseURL}/bangumis/mostView`);
+};
+
+const searchBangumisByName = (name, pn, ps) => {
+  return axios.get(`${baseURL}/bangumis`,{
+    params: {
+      bangumiName: name,
+      pageNum: pn,
+      pageSize: ps
+    }
+  })
+};
+
+const getNotice = () => {
+  return axios.get(`${baseURL}/notices/showIndex`);
+};
+
+const getNoticeById = id => {
+  return axios.get(`${baseURL}/notices/${id}`);
 };
 
 
@@ -249,5 +292,11 @@ export default {
   deletePostBangumi,
   matchVideoSuccess,
   reVerifyEmail,
-  updateUserPwd
+  updateUserPwd,
+  getEpisodesByBid,
+  getMostViewBangumis,
+  getBangumiById,
+  searchBangumisByName,
+  getNotice,
+  getNoticeById
 };

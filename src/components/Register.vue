@@ -12,7 +12,8 @@
             <div :class="{hidden:!isRegSuccess}" class="after-reg">
               <h3 class="title">注册成功!</h3>
               <div class="area-info">
-                <p>您的账号为:<span class="mobile"></span></p>
+                <p>您的用户名为:<span class="mobile">{{regNick}}</span></p>
+                <p>您的邮箱为:<span class="mobile">{{regEmail}}</span></p>
                 <p>请妥善保管!</p>
               </div>
               <a href="/">稍后将会自动回到首页...</a>
@@ -67,46 +68,6 @@
                 <p></p>
                 <span class="clearfix"></span>
               </div>
-            </el-form>
-            <!-- <form id="form-reg" class="form">
-            <h3 class="title">注册 Darker</h3>
-            
-            <div class="area">
-        
-            <input id="ipt-username-reg" name="name" v-model="nick" type="text" data-name="昵称" data-direction="right" data-length="4,16" class="regname name l error" placeholder="请输入昵称" required="required">
-            <span class="clearfix"></span>
-            </div>
-            <div class="area">
-          
-            <input id="ipt-mobile-reg" name="mobile" v-model="email" type="text" data-name="邮箱" data-direction="right" autocomplete="off" class="mobile l error" placeholder="请输入邮箱" required="required">
-            <span class="clearfix"></span>
-            </div>
-            <div class="area">
-            
-            <input id="ipt-pwd-reg" name="password" v-model="password" type="password" data-name="密码" data-length="6,32" data-direction="right" placeholder="请输入密码" class="password l error" required="required">
-            <span class="clearfix"></span>
-            </div>
-            <div class="area">
-            <input id="ipt-repwd-reg" name="password2" v-model="dupw" type="password" data-name="确认密码" data-length="6,32" data-direction="right" placeholder="确认密码" class="re-password l error" required="required">
-            <span class="clearfix"></span>
-            </div>
-            
-            <div class="area area-agree">
-            <input id="ipt-agree-reg" type="checkbox" checked="checked" class="l agree">
-            <label for="ipt-agree-reg" class="agree-b">我已经认真阅读并同意Darker的<a href="#" target="_blank">《使用协议》</a>。</label>
-            <a href="#" class="back-login">返回登录</a>
-            <span class="clearfix"></span>
-            </div>
-            <div class="area-tool">
-            <a @click="register" class="do login-btn primary">注册</a>
-            <p><span id="btn-service-online" style="color:#666;cursor: default;" class="btn">海外用户请邮件联系report@acfun.tv</span></p>
-            <div id="launchBtn" class="launchBtn bg hidden">
-            </div>
-            <p></p>
-            <span class="clearfix"></span>
-            </div>
-            <p class="banner-tip">小提示：点击首页banner有惊喜哦！</p>
-            </form> -->
           </div>
         </div>
         <span class="clearfix"></span>
@@ -182,7 +143,9 @@
           email: [
             {validator: checkEmail, trigger: 'blur'}
           ]
-        }
+        },
+        regNick: "",
+        regEmail: ""
 
       }
     },
@@ -209,6 +172,8 @@
         if (res.data.code === 0) {
           this.tap("注册成功");
           this.isRegSuccess = true;
+          this.regNick = resData.nick;
+          this.regEmail = resData.email;
           let loginRes = await API.login({
             principal: this.registerData.nick,
             password: this.registerData.password,
@@ -222,6 +187,7 @@
             localStorage.setItem("USER_ID", loginResData.user.uid);
             localStorage.setItem("JWT_TOKEN", loginResData.token);
             localStorage.setItem("loginUserName", loginResData.user.nick);
+            localStorage.setItem("ROLE",loginResData.user.role);
             setTimeout(() => {
               window.location.href = "/";
             }, 3000);
@@ -307,7 +273,7 @@
     margin-top: 20px;
     width: 420px;
     height: 320px;
-    background: url(/static/zz.gif) 50% 50% no-repeat;
+    /*background: url(/static/zz.gif) 50% 50% no-repeat;*/
     /* border-radius: 64px; */
     /* box-shadow: 0 0 2px #fbfbfb inset, 0 0 4px #fbfbfb inset, 0 0 8px #fbfbfb inset, 0 0 16px #fbfbfb inset, 0 0 32px #fbfbfb inset, 0 0 64px #fbfbfb inset; */
   }
@@ -344,6 +310,7 @@
     border: 1px #ddd solid;
     padding: 50px 55px 40px;
     background: #fff;
+    border-radius: 10px;
   }
 
   #area-reg .r .area-reg .after-reg .area-info p {
@@ -360,7 +327,7 @@
   #area-reg .r .area-reg .after-reg a {
     text-indent: 2em;
     display: block;
-    text-align: right;
+    text-align: center;
     color: #999;
   }
 
