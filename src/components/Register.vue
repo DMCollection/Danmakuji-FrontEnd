@@ -68,7 +68,6 @@
                 <p></p>
                 <span class="clearfix"></span>
               </div>
-            </el-form>
           </div>
         </div>
         <span class="clearfix"></span>

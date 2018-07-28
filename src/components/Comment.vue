@@ -31,14 +31,12 @@
                         :key="reply.reply.reply.replyId+reply.reply.reply.rLike"
                         :episode_id="episode_id"
             >
-
             </root-reply>
 
             <div v-if="hot.length>0" class="hot-line">
               <span @click="readMoreHot">以上为热门评论，<a class="more-hot">查看更多</a></span>
             </div>
           </div>
-
           <root-reply v-for="(reply,index) in replies"
                       :reply_total="replies.length"
                       :index="index"
@@ -251,7 +249,6 @@
   .paging-box {
     font-size: 12px;
   }
-
   .bb-comment .comment-list {
     padding-top: 20px;
   }

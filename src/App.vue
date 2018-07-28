@@ -44,7 +44,6 @@
                               <div class="i_menu i_menu_login">
                                 <p class="tip">登录后你可以：</p> 
                                 <div class="img">
-                                <!--<img src="/static/sk.jpg">-->
                                 <img src="/static/sticker.webp">
                                 </div>
                             </div>

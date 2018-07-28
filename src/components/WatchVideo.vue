@@ -417,7 +417,6 @@
               this.hasInfo = false;
               this.isMatch = false;
             }
-
             else if (videosInfos.length > 1) {
               this.dialogConfirmBangumiVisible = true;
               this.videoList = videosInfos;
@@ -670,7 +669,6 @@
         } else {
           this.$message.warning("请先登陆后再提交吧~");
         }
-
       },
       async sendPostBangumiInfo() {
         let bangumiName = this.postBangumi.bangumiName;

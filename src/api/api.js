@@ -261,6 +261,7 @@ const getNoticeById = id => {
   return axios.get(`${baseURL}/notices/${id}`);
 };
 
+
 export default {
   login,
   logout,

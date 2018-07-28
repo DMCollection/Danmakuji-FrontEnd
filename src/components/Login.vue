@@ -75,7 +75,7 @@ export default {
         password: this.loginData.password,
         remember_me: this.loginData.remember_me ? 1 : 0
       };
-      if (loginInfo.principal == "" || loginInfo.password == "") {
+      if (loginInfo.principal === "" || loginInfo.password === "") {
         this.$message({
           message: "账号或密码为空",
           type: "info"
@@ -200,9 +200,6 @@ div {
     margin-top: 20px;
     width: 420px;
     height: 320px;
-    background: url(/static/zz.gif) 50% 50% no-repeat;
-    /* border-radius: 64px; */
-    /* box-shadow: 0 0 2px #fbfbfb inset, 0 0 4px #fbfbfb inset, 0 0 8px #fbfbfb inset, 0 0 16px #fbfbfb inset, 0 0 32px #fbfbfb inset, 0 0 64px #fbfbfb inset; */
 }
 #area-reg .r .area-reg {
     width: 380px;
